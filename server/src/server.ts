@@ -1,98 +1,195 @@
-import express from "express";
-import dotenv from "dotenv";
+import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import morgan from "morgan";
 import cookieParser from "cookie-parser";
-
+import dotenv from "dotenv";
 import connectDB from "./config/database";
+import { createLogger } from "./utils/logger";
+import { apiLimiter } from "./middlewares/rateLimiter";
+
+const logger = createLogger("Server");
+
+// ==============================
+// Route Imports
+// ==============================
 
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
 import documentRoutes from "./routes/document.routes";
+import chatRoutes from "./routes/chat.routes";
+import dashboardRoutes from "./routes/dashboard.routes";
+import conversationRoutes from "./routes/conversation.routes";
+import summaryRoutes from "./routes/summary.routes";
+import flashcardRoutes from "./routes/flashcard.routes";
+import quizRoutes from "./routes/quiz.routes";
+import plannerRoutes from "./routes/planner.routes";
+import notesRoutes from "./routes/notes.routes";
+import bookmarkRoutes from "./routes/bookmark.routes";
+import historyRoutes from "./routes/history.routes";
+import mindmapRoutes from "./routes/mindmap.routes";
+
+// ==============================
+// Load Environment Variables
+// ==============================
 
 dotenv.config();
 
-const app = express();
+const app: Application = express();
+const PORT = Number(process.env.PORT) || 5000;
+const httpLogger = createLogger("HTTP");
 
-// ================================
-// Connect Database
-// ================================
+// ==============================
+// Connect MongoDB
+// ==============================
+
 connectDB();
 
-// ================================
-// Middlewares
-// ================================
+// ==============================
+// Security & Utility Middlewares
+// ==============================
+
+// Secure HTTP Headers
 app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
   })
 );
 
-app.use(helmet());
-
-app.use(morgan("dev"));
-
-app.use(express.json());
-
-app.use(express.urlencoded({ extended: true }));
-
+// Cookie Parser
 app.use(cookieParser());
 
-// ================================
-// Health Check
-// ================================
-app.get("/", (_req, res) => {
+// CORS Configuration
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, postman)
+      if (!origin) return callback(null, true);
+      
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        process.env.CLIENT_URL,
+      ].filter(Boolean);
+
+      if (allowedOrigins.includes(origin) || origin.startsWith("http://localhost:")) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  })
+);
+
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// General Rate Limiter
+app.use("/api", apiLimiter);
+
+// ==============================
+// HTTP Request Logging Middleware
+// ==============================
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const startTime = Date.now();
+  const { method, originalUrl, ip } = req;
+
+  httpLogger.info(`--> [INCOMING] ${method} ${originalUrl} | Client IP: ${ip || "unknown"}`);
+
+  res.on("finish", () => {
+    const elapsed = Date.now() - startTime;
+    const { statusCode } = res;
+    const logLevel = statusCode >= 500 ? "error" : statusCode >= 400 ? "warn" : "info";
+
+    httpLogger[logLevel](
+      `<-- [COMPLETED] ${method} ${originalUrl} | Status: ${statusCode} | Time: ${elapsed}ms`
+    );
+  });
+
+  next();
+});
+
+// ==============================
+// Health Check Endpoint
+// ==============================
+
+app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({
     success: true,
-    message: "🚀 EduMind AI Backend Running",
+    message: "EduMind AI Server Running 🚀",
   });
 });
 
-// ================================
+app.get("/health", (_req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    status: "Healthy",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// ==============================
 // API Routes
-// ================================
+// ==============================
+
 app.use("/api/auth", authRoutes);
-
-app.use("/api/user", userRoutes);
-
+app.use("/api/users", userRoutes);
 app.use("/api/documents", documentRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/conversations", conversationRoutes);
+app.use("/api/summary", summaryRoutes);
+app.use("/api/flashcards", flashcardRoutes);
+app.use("/api/quiz", quizRoutes);
+app.use("/api/planner", plannerRoutes);
+app.use("/api/notes", notesRoutes);
+app.use("/api/bookmarks", bookmarkRoutes);
+app.use("/api/history", historyRoutes);
+app.use("/api/mindmap", mindmapRoutes);
 
-// ================================
+// ==============================
 // 404 Handler
-// ================================
-app.use((_req, res) => {
+// ==============================
+
+app.use((req: Request, res: Response) => {
+  logger.warn(`404 Not Found: ${req.method} ${req.originalUrl}`);
   res.status(404).json({
     success: false,
-    message: "Route not found",
+    message: "Route Not Found",
   });
 });
 
-// ================================
+// ==============================
 // Global Error Handler
-// ================================
+// ==============================
+
 app.use(
   (
-    err: any,
-    _req: express.Request,
-    res: express.Response,
-    _next: express.NextFunction
+    err: Error,
+    _req: Request,
+    res: Response,
+    _next: NextFunction
   ) => {
-    console.error(err);
+    logger.error(`Global Error Caught: ${err.message}`, { stack: err.stack });
 
-    res.status(err.status || 500).json({
+    res.status(500).json({
       success: false,
       message: err.message || "Internal Server Error",
     });
   }
 );
 
-// ================================
+// ==============================
 // Start Server
-// ================================
-const PORT = process.env.PORT || 5000;
+// ==============================
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  logger.info(`EduMind AI Server running on port ${PORT} [http://localhost:${PORT}]`);
 });

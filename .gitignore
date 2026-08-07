@@ -8,3 +8,6 @@ venv/
 dist/
 build/
 uploads/
+*.tsbuildinfo
+ai-service/storage/
+.DS_Store

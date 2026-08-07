@@ -12,15 +12,11 @@ chunks = [
 
 embeddings = embedding_service.create_embeddings(chunks)
 
-vector_store.add_documents(chunks, embeddings)
+vector_store.add_documents(chunks, embeddings, document_id="test_doc_1")
 
-query_embedding = embedding_service.create_query_embedding(
-    "What is AI?"
-)
-
-results = vector_store.search(query_embedding)
+results = vector_store.search("What is AI?", document_id="test_doc_1")
 
 print("Search Results:\n")
 
 for item in results:
-    print(item)
+    print("-", item)
