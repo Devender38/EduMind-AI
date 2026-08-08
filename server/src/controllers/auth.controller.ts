@@ -58,15 +58,6 @@ export const register = async (
       return;
     }
 
-    if (mongoose.connection.readyState !== 1) {
-      logger.warn("Registration rejected: Database not connected (readyState=" + mongoose.connection.readyState + ")");
-      res.status(503).json({
-        success: false,
-        message: "Database is currently connecting to MongoDB Atlas. Please ensure MONGO_URI is configured and wait a few moments.",
-      });
-      return;
-    }
-
     const normalizedEmail = email.toLowerCase().trim();
     logger.info(`Processing registration request for: ${normalizedEmail}`);
 
@@ -186,15 +177,6 @@ export const login = async (
       res.status(400).json({
         success: false,
         message: "Email and password are required.",
-      });
-      return;
-    }
-
-    if (mongoose.connection.readyState !== 1) {
-      logger.warn("Login rejected: Database not connected (readyState=" + mongoose.connection.readyState + ")");
-      res.status(503).json({
-        success: false,
-        message: "Database is currently connecting to MongoDB Atlas. Please ensure MONGO_URI is configured and wait a few moments.",
       });
       return;
     }
