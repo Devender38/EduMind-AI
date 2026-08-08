@@ -20,13 +20,9 @@ const connectDB = async (retryCount = 0): Promise<void> => {
   } catch (error: any) {
     logger.error(`MongoDB Connection Error: ${error?.message || error}`);
 
-    if (retryCount < 5) {
-      const delay = Math.min(1000 * Math.pow(2, retryCount), 15000);
-      logger.info(`Retrying MongoDB connection in ${delay / 1000}s (Attempt ${retryCount + 1}/5)...`);
-      setTimeout(() => connectDB(retryCount + 1), delay);
-    } else {
-      logger.warn("Max MongoDB connection retries reached. Database features will be unavailable until connection is restored.");
-    }
+    const delay = Math.min(2000 * (retryCount + 1), 10000);
+    logger.info(`Retrying MongoDB connection in ${delay / 1000}s (Attempt ${retryCount + 1})...`);
+    setTimeout(() => connectDB(retryCount + 1), delay);
   }
 };
 
