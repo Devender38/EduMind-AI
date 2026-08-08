@@ -1,5 +1,5 @@
 import time
-import fitz
+import pymupdf as fitz
 from app.utils.logger import get_logger
 
 logger = get_logger("PDFService")
