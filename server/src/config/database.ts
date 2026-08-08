@@ -3,7 +3,7 @@ import { createLogger } from "../utils/logger";
 
 const logger = createLogger("Database");
 
-const connectDB = async (): Promise<void> => {
+const connectDB = async (retry = 0): Promise<void> => {
   const mongoUri = process.env.MONGO_URI;
 
   if (!mongoUri) {
@@ -21,6 +21,8 @@ const connectDB = async (): Promise<void> => {
     logger.info(`MongoDB Connected: ${connection.connection.host}`);
   } catch (error: any) {
     logger.error(`MongoDB Connection Error: ${error?.message || error}`);
+    logger.info(`Retrying MongoDB connection in 3s (Attempt ${retry + 1})...`);
+    setTimeout(() => connectDB(retry + 1), 3000);
   }
 };
 

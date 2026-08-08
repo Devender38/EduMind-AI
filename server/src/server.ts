@@ -1,4 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from "express";
+import mongoose from "mongoose";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
@@ -134,10 +135,24 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 app.get("/health", (_req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    status: "Healthy",
+  const readyState = mongoose.connection.readyState;
+  const states: Record<number, string> = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting",
+  };
+
+  res.status(readyState === 1 ? 200 : 503).json({
+    success: readyState === 1,
+    status: readyState === 1 ? "Healthy" : "Degraded",
     uptime: process.uptime(),
+    database: {
+      status: states[readyState] || "unknown",
+      readyState,
+      isConfigured: Boolean(process.env.MONGO_URI),
+      host: mongoose.connection.host || null,
+    },
     timestamp: new Date().toISOString(),
   });
 });
