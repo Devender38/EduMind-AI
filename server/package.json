@@ -27,9 +27,7 @@
         "nodemailer": "^9.0.5",
         "socket.io": "^4.8.1",
         "streamifier": "^0.1.1",
-        "typescript": "^5.8.3"
-    },
-    "devDependencies": {
+        "typescript": "^5.8.3",
         "@types/bcrypt": "^6.0.0",
         "@types/cookie-parser": "^1.4.10",
         "@types/cors": "^2.8.19",
@@ -38,7 +36,9 @@
         "@types/morgan": "^1.9.10",
         "@types/multer": "^2.2.0",
         "@types/node": "^24.0.0",
-        "@types/nodemailer": "^8.0.1",
+        "@types/nodemailer": "^8.0.1"
+    },
+    "devDependencies": {
         "nodemon": "^3.1.10",
         "ts-node": "^10.9.2"
     }
