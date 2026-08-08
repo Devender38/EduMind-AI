@@ -4,7 +4,8 @@ import { createLogger } from "../utils/logger";
 const logger = createLogger("Database");
 
 const connectDB = async (retry = 0): Promise<void> => {
-  const mongoUri = process.env.MONGO_URI;
+  const rawUri = process.env.MONGO_URI || "";
+  const mongoUri = rawUri.replace(/^["']|["']$/g, "").trim();
 
   if (!mongoUri) {
     logger.error(
