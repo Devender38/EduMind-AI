@@ -6,6 +6,6 @@ pymupdf
 faiss-cpu
 numpy
 python-dotenv
-sentence-transformers
+fastembed
 langchain-text-splitters
 groq
