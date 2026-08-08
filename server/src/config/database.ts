@@ -13,7 +13,10 @@ const connectDB = async (retryCount = 0): Promise<void> => {
 
   try {
     const connection = await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 8000,
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+      family: 4,
     });
 
     logger.info(`MongoDB Connected: ${connection.connection.host}`);
