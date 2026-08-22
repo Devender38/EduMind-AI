@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, LogOut, Sparkles, Download, Command } from "lucide-react";
+import { Search, LogOut, Sparkles, Download, Command, Menu } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import CommandPalette from "./CommandPalette";
 import ExportCenterModal from "./ExportCenterModal";
@@ -7,9 +7,10 @@ import { useAuthStore } from "../../store/authStore";
 
 interface Props {
   selectedDocument?: any;
+  onMenuClick?: () => void;
 }
 
-function Topbar({ selectedDocument }: Props) {
+function Topbar({ selectedDocument, onMenuClick }: Props) {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
   const navigate = useNavigate();
@@ -34,18 +35,29 @@ function Topbar({ selectedDocument }: Props) {
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/10 bg-[#07090e]/70 px-6 py-3.5 backdrop-blur-xl md:px-8">
+      <header className="sticky top-0 z-30 flex items-center justify-between gap-2 md:gap-4 border-b border-white/10 bg-[#07090e]/70 px-4 py-3.5 backdrop-blur-xl md:px-8">
+        
+        {/* Mobile Menu Button */}
+        {onMenuClick && (
+          <button 
+            onClick={onMenuClick}
+            className="lg:hidden p-2 -ml-2 text-slate-300 hover:text-white transition"
+          >
+            <Menu size={24} />
+          </button>
+        )}
+
         {/* Universal Search Command Bar */}
         <button
           onClick={() => setIsCommandOpen(true)}
-          className="group relative flex w-80 max-w-full items-center justify-between rounded-xl border border-white/10 bg-slate-900/80 px-3.5 py-2 text-xs text-slate-400 transition hover:border-cyan-500/50 hover:bg-slate-900 hover:text-slate-200 hover:shadow-lg hover:shadow-cyan-500/10"
+          className="group relative flex flex-1 lg:w-80 lg:flex-none max-w-full items-center justify-between rounded-xl border border-white/10 bg-slate-900/80 px-3.5 py-2 text-xs text-slate-400 transition hover:border-cyan-500/50 hover:bg-slate-900 hover:text-slate-200 hover:shadow-lg hover:shadow-cyan-500/10"
         >
-          <div className="flex items-center gap-2.5">
-            <Search size={14} className="text-cyan-400" />
-            <span>Search anything in EduMind...</span>
+          <div className="flex items-center gap-2.5 overflow-hidden">
+            <Search size={14} className="text-cyan-400 shrink-0" />
+            <span className="truncate">Search EduMind...</span>
           </div>
 
-          <span className="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-semibold text-slate-400">
+          <span className="hidden lg:flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] font-semibold text-slate-400">
             <Command size={10} /> K
           </span>
         </button>

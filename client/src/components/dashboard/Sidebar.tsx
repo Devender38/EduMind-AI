@@ -10,11 +10,16 @@ import {
   Brain,
   Sparkles,
   Zap,
+  X,
 } from "lucide-react";
 import { NavLink, useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 
-function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+function Sidebar({ onClose }: SidebarProps) {
   const navigate = useNavigate();
   const { user, logout: storeLogout } = useAuthStore();
 
@@ -66,7 +71,17 @@ function Sidebar() {
   ];
 
   return (
-    <aside className="relative flex min-h-screen w-72 flex-col border-r border-white/10 bg-[#07090e]/80 backdrop-blur-2xl">
+    <aside className="relative flex min-h-screen w-72 flex-col border-r border-white/10 bg-[#07090e]/95 lg:bg-[#07090e]/80 backdrop-blur-2xl">
+      {/* Mobile Close Button */}
+      {onClose && (
+        <button 
+          onClick={onClose}
+          className="lg:hidden absolute top-4 right-4 p-2 rounded-full bg-white/5 text-slate-400 hover:text-white transition"
+        >
+          <X size={20} />
+        </button>
+      )}
+
       {/* Logo */}
       <div className="border-b border-white/10 p-6">
         <Link to="/dashboard" className="group flex items-center gap-3">
