@@ -60,8 +60,13 @@ export default function Register() {
       return;
     }
 
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters long.");
+      return;
+    }
+
+    if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+      toast.error("Password must contain letters, numbers, and a special character.");
       return;
     }
 

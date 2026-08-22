@@ -39,7 +39,16 @@ export default function MindMapVisualizer({ document }: Props) {
     try {
       setLoading(true);
       const data = await generateMindMap(document._id);
-      setTreeData(data);
+      
+      let idCounter = 0;
+      const normalizeNode = (node: any): MindMapNode => ({
+        id: node.id || `node-${idCounter++}`,
+        label: node.label || node.name || "Unnamed Node",
+        color: node.color,
+        children: node.children ? node.children.map(normalizeNode) : undefined,
+      });
+
+      setTreeData(normalizeNode(data));
     } catch (err) {
       console.error(err);
       toast.error("Failed to load concept mind map.");

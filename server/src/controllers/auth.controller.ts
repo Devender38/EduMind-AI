@@ -50,10 +50,18 @@ export const register = async (
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       res.status(400).json({
         success: false,
-        message: "Password must be at least 6 characters long.",
+        message: "Password must be at least 8 characters long.",
+      });
+      return;
+    }
+
+    if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+      res.status(400).json({
+        success: false,
+        message: "Password must contain at least one letter, one number, and one special character.",
       });
       return;
     }

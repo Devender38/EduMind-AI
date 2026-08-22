@@ -37,6 +37,7 @@ class EmbeddingService:
 
         # 1. Try FastEmbed (Lightweight ONNX Runtime - ~35MB RAM, no PyTorch)
         try:
+            # pyrefly: ignore [missing-import]
             from fastembed import TextEmbedding
             logger.info("Initializing FastEmbed (ONNX Runtime, ultra-low memory mode)...")
             _GLOBAL_MODEL = TextEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
