@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Search, LogOut, Sparkles, Download, Command, Menu } from "lucide-react";
+import { Search, LogOut, Sparkles, Download, Command, Menu, MessageSquareHeart } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import CommandPalette from "./CommandPalette";
 import ExportCenterModal from "./ExportCenterModal";
+import FeedbackModal from "../feedback/FeedbackModal";
 import { useAuthStore } from "../../store/authStore";
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 function Topbar({ selectedDocument, onMenuClick }: Props) {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const navigate = useNavigate();
 
   const { user, logout } = useAuthStore();
@@ -63,29 +65,40 @@ function Topbar({ selectedDocument, onMenuClick }: Props) {
         </button>
 
         {/* Right Side Status & User Info */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          {/* Feedback & Review Trigger */}
+          <button
+            onClick={() => setIsFeedbackOpen(true)}
+            title="Feedback & Review"
+            className="flex items-center gap-1.5 rounded-xl border border-pink-500/30 bg-pink-500/10 p-2 sm:px-3 sm:py-2 text-xs font-bold text-pink-300 shadow-md shadow-pink-500/10 transition hover:bg-pink-500/20 active:scale-95"
+          >
+            <MessageSquareHeart size={14} className="text-pink-400" />
+            <span className="hidden sm:inline">Feedback</span>
+          </button>
+
           {/* Universal Export Center Trigger */}
           <button
             onClick={() => setIsExportOpen(true)}
-            className="flex items-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs font-bold text-cyan-300 shadow-md shadow-cyan-500/10 transition hover:bg-cyan-500/20 active:scale-95"
+            title="Export Center"
+            className="flex items-center gap-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-2 sm:px-3 sm:py-2 text-xs font-bold text-cyan-300 shadow-md shadow-cyan-500/10 transition hover:bg-cyan-500/20 active:scale-95"
           >
-            <Download size={13} />
+            <Download size={14} />
             <span className="hidden sm:inline">Export Center</span>
           </button>
 
-          {/* Live Engine Status Badge */}
-          <div className="hidden lg:flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-300">
+          {/* Live Status Badge */}
+          <div className="hidden xl:flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-300">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
             </span>
-            <span className="text-[11px] font-semibold">RAG 3.0 Active</span>
+            <span className="text-[11px] font-semibold">Online</span>
           </div>
 
           {/* User Card - Link to Profile */}
           <Link
             to="/profile"
-            className="group flex items-center gap-3 rounded-xl border border-white/10 bg-slate-900/60 p-1.5 pr-3.5 backdrop-blur-xl transition hover:border-cyan-500/40 hover:bg-slate-800/80"
+            className="group flex items-center gap-2 sm:gap-3 rounded-xl border border-white/10 bg-slate-900/60 p-1 sm:p-1.5 sm:pr-3.5 backdrop-blur-xl transition hover:border-cyan-500/40 hover:bg-slate-800/80"
           >
             <div className="relative">
               {user?.avatar ? (
@@ -106,20 +119,20 @@ function Topbar({ selectedDocument, onMenuClick }: Props) {
               <p className="text-xs font-bold text-white group-hover:text-cyan-300 transition">
                 {user?.name || "Guest"}
               </p>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-slate-400 truncate max-w-[120px]">
                 {user?.email || "Student"}
               </p>
             </div>
           </Link>
 
-          {/* Logout */}
+          {/* Logout (Hidden on mobile since mobile sidebar has full logout button) */}
           <button
             onClick={handleLogout}
             title="Logout"
-            className="flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-400 transition hover:bg-red-600 hover:text-white"
+            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-400 transition hover:bg-red-600 hover:text-white"
           >
             <LogOut size={14} />
-            <span className="hidden sm:inline">Logout</span>
+            <span className="hidden md:inline">Logout</span>
           </button>
         </div>
       </header>
@@ -134,6 +147,11 @@ function Topbar({ selectedDocument, onMenuClick }: Props) {
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}
         document={selectedDocument || null}
+      />
+
+      <FeedbackModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
       />
     </>
   );

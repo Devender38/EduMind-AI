@@ -5,8 +5,8 @@ import Document from "../models/Document";
 const logger = createLogger("AIServiceClient");
 
 const AI_BASE_URL = process.env.AI_SERVICE_URL || "http://127.0.0.1:8000";
-const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
-const GROQ_MODEL = process.env.MODEL_NAME || "llama-3.1-8b-instant";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
+const OPENROUTER_MODEL = process.env.MODEL_NAME || "mistralai/mistral-7b-instruct:free";
 
 // =============================
 // Interfaces
@@ -90,35 +90,91 @@ export interface AISemanticSearch {
 }
 
 // =============================
-// Direct Groq Helper
+// Direct OpenRouter AI Helper
 // =============================
 
-async function callGroqDirect(
+const FREE_FALLBACK_MODELS = [
+  "google/gemini-2.5-flash",
+  "google/gemini-2.5-flash-lite",
+  "google/gemini-3.5-flash-lite",
+  "deepseek/deepseek-v4-flash-0731:free",
+  "liquid/lfm-2.5-2.6b:free",
+];
+
+async function callAIDirect(
   messages: Array<{ role: string; content: string }>,
-  jsonMode: boolean = false
+  jsonMode: boolean = false,
+  retries: number = 3,
+  modelIndex: number = 0
 ): Promise<string> {
-  const payload: any = {
-    model: GROQ_MODEL,
-    messages,
-    temperature: jsonMode ? 0.1 : 0.5,
-  };
-  if (jsonMode) {
-    payload.response_format = { type: "json_object" };
-  }
+  const envModel = process.env.MODEL_NAME || "google/gemini-2.5-flash";
+  const modelsToTry = [envModel, ...FREE_FALLBACK_MODELS.filter((m) => m !== envModel)];
+  const selectedModel = modelsToTry[modelIndex] || modelsToTry[0];
 
-  const response = await axios.post(
-    "https://api.groq.com/openai/v1/chat/completions",
-    payload,
-    {
-      headers: {
-        Authorization: `Bearer ${GROQ_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      timeout: 45000,
+  try {
+    const apiKey = process.env.OPENROUTER_API_KEY || OPENROUTER_API_KEY;
+    if (!apiKey) {
+      throw new Error("OPENROUTER_API_KEY is not defined in .env file");
     }
-  );
 
-  return response.data?.choices?.[0]?.message?.content || "";
+    const payload: any = {
+      model: selectedModel,
+      messages,
+      temperature: jsonMode ? 0.1 : 0.5,
+      max_tokens: jsonMode ? 3500 : 2500,
+    };
+
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://edumind-ai.vercel.app",
+          "X-Title": "EduMind AI",
+        },
+        timeout: 60000,
+      }
+    );
+
+    return response.data?.choices?.[0]?.message?.content || "";
+  } catch (error: any) {
+    const status = error.response?.status;
+    const isModelUnavailable = status === 404 || status === 400 || status === 402;
+    const isTransientError = status === 429 || status === 503 || status === 529;
+
+    if (isModelUnavailable && modelIndex + 1 < modelsToTry.length) {
+      logger.warn(
+        `Model ${selectedModel} unavailable or credits low (${status}). Switching to fallback: ${modelsToTry[modelIndex + 1]}`
+      );
+      return callAIDirect(messages, jsonMode, retries, modelIndex + 1);
+    }
+
+    if (isTransientError && retries > 0) {
+      if (modelIndex + 1 < modelsToTry.length) {
+        logger.warn(
+          `Model ${selectedModel} busy (${status}). Trying alternative model: ${modelsToTry[modelIndex + 1]}`
+        );
+        return callAIDirect(messages, jsonMode, retries - 1, modelIndex + 1);
+      }
+      logger.warn(`OpenRouter API busy (${status}). Retrying in 5 seconds... (${retries} retries left)`);
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      return callAIDirect(messages, jsonMode, retries - 1, modelIndex);
+    }
+
+    logger.error("OpenRouter API Error Details:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+// =============================
+// Interfaces
+// =============================
+
+export interface AIAnswer {
+  answer: string;
+  sources: string[];
 }
 
 async function getDocumentContext(
@@ -135,7 +191,7 @@ async function getDocumentContext(
             d.extractedText ||
             d.summary ||
             ""
-          ).substring(0, 5000)}`
+          ).substring(0, 3000)}`
       )
       .join("\n\n---\n\n");
   } catch {
@@ -216,11 +272,39 @@ export class AIService {
       );
 
       const docContext = await getDocumentContext(documentId);
-      const systemPrompt = docContext
-        ? `You are EduMind AI, a state-of-the-art educational study companion. Use the following context from the student's study materials to answer their question clearly, accurately, and thoroughly in markdown format.\n\nContext:\n${docContext}`
-        : `You are EduMind AI, an intelligent, helpful, and encouraging educational AI tutor. Answer questions clearly, accurately, with examples, step-by-step explanations, and rich Markdown formatting.`;
 
-      const groqAnswer = await callGroqDirect([
+      const systemPrompt = docContext
+        ? `You are an elite, highly intelligent, and friendly AI Study Assistant (like ChatGPT).
+Answer the student's question accurately and thoroughly using their study material.
+
+Context from their document:
+${docContext}
+
+Formatting Guidelines (ChatGPT Pattern):
+1. **Direct Answer**: Start with a concise, clear explanation directly answering the query.
+2. **Structured Breakdown**:
+   - Use clean Markdown headings (###)
+   - Use bullet points (•) and numbered steps for high readability
+   - Highlight key terms, definitions, and formulas in **bold**
+3. **Examples & Insights**: Provide practical examples, analogies, or code snippets (in code blocks with language tags) when relevant.
+4. **Summary**: End with a quick "💡 Key Takeaway" or revision tip.
+5. **Language**: If the student asks in Hindi or Hinglish, reply naturally in sweet, clear Hindi/Hinglish. If in English, reply in English.
+6. **Tone**: Warm, encouraging, organized, and crystal clear. Avoid dense walls of text.`
+        : `You are an elite, highly intelligent, and friendly AI Study Assistant (like ChatGPT).
+Answer the user's question clearly, thoroughly, and engagingly.
+
+Formatting Guidelines (ChatGPT Pattern):
+1. **Direct Answer**: Start with a clear, direct summary of the concept upfront.
+2. **Structured Breakdown**:
+   - Use clean Markdown headings (###)
+   - Use bullet points (•) and numbered steps
+   - Highlight key terms, definitions, and concepts in **bold**
+3. **Examples & Code**: Include concrete real-world examples, analogies, or code blocks (with syntax highlighting) when applicable.
+4. **Summary**: End with a helpful "💡 Quick Summary" or practical takeaway.
+5. **Language**: Answer in the same language/style (English, Hindi, or Hinglish) the user asked in.
+6. **Tone**: Warm, friendly, encouraging, and well-spaced. Never output dense or messy text.`;
+
+      const groqAnswer = await callAIDirect([
         { role: "system", content: systemPrompt },
         { role: "user", content: question },
       ]);
@@ -259,7 +343,7 @@ export class AIService {
 Content:
 ${docContext || "General Study Topic"}`;
 
-      const raw = await callGroqDirect(
+      const raw = await callAIDirect(
         [
           {
             role: "system",
@@ -312,7 +396,7 @@ ${docContext || "General Study Topic"}`;
       const docContext = await getDocumentContext(documentId);
       const prompt = `Create a structured ${planType} study schedule/plan with daily milestones, review sessions, and active recall practice for this subject:\n\n${docContext || "Comprehensive Exam Preparation"}`;
 
-      const plan = await callGroqDirect([
+      const plan = await callAIDirect([
         {
           role: "system",
           content: "You are an elite academic study planner. Output rich Markdown.",
@@ -349,7 +433,7 @@ ${docContext || "General Study Topic"}`;
       const docContext = await getDocumentContext(documentId);
       const prompt = `Generate comprehensive ${noteType} study revision notes with bullet points, formulas/definitions, and key takeaways for:\n\n${docContext || "Subject Study Material"}`;
 
-      const notes = await callGroqDirect([
+      const notes = await callAIDirect([
         {
           role: "system",
           content: "You are a master educator. Output clear, beautiful Markdown notes.",
@@ -382,7 +466,7 @@ ${docContext || "General Study Topic"}`;
       const docContext = await getDocumentContext(documentId);
       const prompt = `Generate a hierarchical Mind Map JSON with a root "name" and nested "children" array representing the core branches and sub-topics of:\n\n${docContext || "Core Subject Outline"}`;
 
-      const raw = await callGroqDirect(
+      const raw = await callAIDirect(
         [
           {
             role: "system",
@@ -395,7 +479,10 @@ ${docContext || "General Study Topic"}`;
       );
 
       try {
-        const parsed = JSON.parse(raw);
+        let cleanedRaw = raw.replace(/```json/g, "").replace(/```/g, "").trim();
+        // Remove <think>...</think> blocks generated by reasoning models
+        cleanedRaw = cleanedRaw.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+        const parsed = JSON.parse(cleanedRaw);
         return {
           success: true,
           document_id: documentId,
@@ -458,9 +545,9 @@ ${docContext || "General Study Topic"}`;
     } catch {
       logger.warn(`Using direct Groq flashcard generator`);
       const docContext = await getDocumentContext(documentId);
-      const prompt = `Generate 6-10 high yield active-recall flashcards for:\n${docContext || "Key Concepts"}\n\nFormat as JSON: {"flashcards": [{"question": "...", "answer": "...", "difficulty": "easy"|"medium"|"hard"}]}`;
+      const prompt = `Generate exactly 10 high yield active-recall flashcards for:\n${docContext || "Key Concepts"}\n\nFormat as JSON: {"flashcards": [{"question": "...", "answer": "...", "difficulty": "easy"|"medium"|"hard"}]}`;
 
-      const raw = await callGroqDirect(
+      const raw = await callAIDirect(
         [
           {
             role: "system",
@@ -468,11 +555,14 @@ ${docContext || "General Study Topic"}`;
           },
           { role: "user", content: prompt },
         ],
-        true
+        true,
+        3 // 3 retries
       );
 
       try {
-        const parsed = JSON.parse(raw);
+        let cleanedRaw = raw.replace(/```json/g, "").replace(/```/g, "").trim();
+        cleanedRaw = cleanedRaw.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+        const parsed = JSON.parse(cleanedRaw);
         const flashcards = parsed.flashcards || [];
         return {
           success: true,
@@ -503,9 +593,9 @@ ${docContext || "General Study Topic"}`;
     } catch {
       logger.warn(`Using direct Groq quiz generator`);
       const docContext = await getDocumentContext(documentId);
-      const prompt = `Generate a 5-question multiple choice quiz for:\n${docContext || "Key Concepts"}\n\nFormat as JSON: {"quiz": [{"question": "...", "options": ["Option A", "Option B", "Option C", "Option D"], "answer": "Option A", "explanation": "..."}]}`;
+      const prompt = `Generate exactly 10 multiple choice quiz questions for:\n${docContext || "Key Concepts"}\n\nFormat as JSON: {"quiz": [{"question": "...", "options": ["Option A", "Option B", "Option C", "Option D"], "answer": "Option A", "explanation": "..."}]}`;
 
-      const raw = await callGroqDirect(
+      const raw = await callAIDirect(
         [
           {
             role: "system",
@@ -513,11 +603,14 @@ ${docContext || "General Study Topic"}`;
           },
           { role: "user", content: prompt },
         ],
-        true
+        true,
+        3 // 3 retries
       );
 
       try {
-        const parsed = JSON.parse(raw);
+        let cleanedRaw = raw.replace(/```json/g, "").replace(/```/g, "").trim();
+        cleanedRaw = cleanedRaw.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+        const parsed = JSON.parse(cleanedRaw);
         const quiz = parsed.quiz || [];
         return {
           success: true,

@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 
 import { uploadDocument } from "../../api/document.api";
 import type { DocumentItem } from "../../api/document.api";
+import { formatFileSize } from "../../utils/formatters";
 
 interface UploadCardProps {
   onUploadSuccess: (document: DocumentItem) => void;
@@ -83,7 +84,8 @@ export default function UploadCard({
       clearInterval(interval);
       setProgress(100);
       setStage("Synthesis Complete ✅");
-      toast.success("PDF uploaded and vectorized successfully!");
+      const fileSizeStr = formatFileSize(selectedFile.size);
+      toast.success(`PDF (${fileSizeStr}) uploaded and indexed successfully!`);
 
       onUploadSuccess(document);
       setSelectedFile(null);
@@ -171,9 +173,12 @@ export default function UploadCard({
                 <p className="truncate text-xs font-bold text-white">
                   {selectedFile.name}
                 </p>
-                <p className="text-[10px] text-slate-400">
-                  {(selectedFile.size / 1024 / 1024).toFixed(2)} MB • Ready for AI Ingestion
-                </p>
+                <div className="mt-1 flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-cyan-500/20 px-2 py-0.5 text-[11px] font-bold text-cyan-300">
+                    💾 {formatFileSize(selectedFile.size)}
+                  </span>
+                  <span className="text-[10px] text-slate-400">• Ready for AI Ingestion</span>
+                </div>
               </div>
             </div>
 

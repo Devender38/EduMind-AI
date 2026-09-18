@@ -43,72 +43,78 @@ export default function StatsCards({
 
   useEffect(() => {
     loadStats();
+    const handleRefresh = () => {
+      loadStats();
+    };
+    window.addEventListener("refreshDashboard", handleRefresh);
+    return () => {
+      window.removeEventListener("refreshDashboard", handleRefresh);
+    };
   }, [refreshKey]);
 
   const cards = [
     {
-      title: "Active Documents",
+      title: "Uploaded Documents",
       value: stats.totalDocuments,
-      subtitle: `${stats.storageUsed} vectorized`,
+      subtitle: `${stats.storageUsed} stored`,
       icon: <FileText className="text-cyan-400" size={22} />,
       border: "border-cyan-500/20 hover:border-cyan-400/50",
       gradient: "from-cyan-500/10 via-blue-600/5 to-transparent",
-      badge: "In Memory",
+      badge: "Documents",
       badgeColor: "bg-cyan-500/15 text-cyan-300 border-cyan-500/20",
     },
     {
       title: "Questions Asked",
       value: stats.totalQuestions,
-      subtitle: "Live neural queries",
+      subtitle: "Messages sent",
       icon: <MessageSquare className="text-blue-400" size={22} />,
       border: "border-blue-500/20 hover:border-blue-400/50",
       gradient: "from-blue-500/10 via-indigo-600/5 to-transparent",
-      badge: "Real-Time",
+      badge: "Chat",
       badgeColor: "bg-blue-500/15 text-blue-300 border-blue-500/20",
     },
     {
-      title: "AI Study Responses",
+      title: "Answers Generated",
       value: stats.totalResponses,
-      subtitle: "RAG synthesized answers",
+      subtitle: "Study explanations",
       icon: <Bot className="text-purple-400" size={22} />,
       border: "border-purple-500/20 hover:border-purple-400/50",
       gradient: "from-purple-500/10 via-pink-600/5 to-transparent",
-      badge: "Llama 3 70B",
+      badge: "Assistant",
       badgeColor: "bg-purple-500/15 text-purple-300 border-purple-500/20",
     },
     {
-      title: "Quiz Mastery Score",
+      title: "Quiz Score",
       value: stats.averageScore > 0 ? `${stats.averageScore}%` : "No Quizzes",
       subtitle: `${stats.quizzesTaken} tests completed`,
       icon: <Award className="text-amber-400" size={22} />,
       border: "border-amber-500/20 hover:border-amber-400/50",
       gradient: "from-amber-500/10 via-orange-600/5 to-transparent",
-      badge: stats.averageScore >= 80 ? "Mastery Achieved" : "Active Recall",
+      badge: stats.averageScore >= 80 ? "Great Progress" : "In Progress",
       badgeColor: "bg-amber-500/15 text-amber-300 border-amber-500/20",
     },
   ];
 
   return (
     <div className="space-y-4">
-      {/* Live Indicator Banner */}
+      {/* Overview Header Banner */}
       <div className="flex flex-wrap items-center justify-between gap-2 px-1">
         <div className="flex items-center gap-2.5">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75"></span>
-            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-cyan-500"></span>
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
           </span>
-          <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">
-            Real-Time Live Cognition Metrics
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+            Study Overview
           </span>
           <span className="rounded-full bg-white/5 border border-white/10 px-2 py-0.5 text-[10px] text-slate-400 flex items-center gap-1">
-            <Sparkles size={10} className="text-cyan-400" />
-            Auto-Synced
+            Live
           </span>
         </div>
 
         <div className="flex items-center gap-2 text-xs text-slate-400">
           <TrendingUp size={14} className="text-emerald-400" />
-          <span>Vector memory & live chat telemetry active</span>
+          <span>Real-time sync</span>
         </div>
       </div>
 

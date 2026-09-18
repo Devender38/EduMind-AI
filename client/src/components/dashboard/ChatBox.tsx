@@ -11,6 +11,8 @@ import {
   Mic,
   Bookmark,
   Sparkles,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -22,6 +24,11 @@ import { getMessages, type Conversation } from "../../api/conversation.api";
 import { createBookmark } from "../../api/bookmark.api";
 import type { DocumentItem } from "../../api/document.api";
 import VoiceTutorModal from "./VoiceTutorModal";
+import {
+  speakWithCuteVoice,
+  stopCuteSpeech,
+  addSpeechStateListener,
+} from "../../utils/cuteSpeech";
 
 interface ChatBoxProps {
   document: DocumentItem | null;
@@ -45,8 +52,19 @@ export default function ChatBox({
   const [copiedId, setCopiedId] = useState("");
   const [bookmarkedId, setBookmarkedId] = useState("");
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
+  const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
 
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const unsubscribe = addSpeechStateListener((id) => {
+      setSpeakingMsgId(id);
+    });
+    return () => {
+      unsubscribe();
+      stopCuteSpeech();
+    };
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
@@ -223,28 +241,28 @@ export default function ChatBox({
 
   return (
     <>
-      <div className="flex h-[720px] flex-col rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl backdrop-blur-2xl">
+      <div className="flex h-[550px] sm:h-[680px] lg:h-[720px] flex-col rounded-3xl border border-white/10 bg-slate-900/80 p-3.5 sm:p-6 shadow-2xl backdrop-blur-2xl">
         {/* Header */}
-        <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-4">
+        <div className="mb-3 sm:mb-4 flex items-center justify-between border-b border-white/10 pb-3 sm:pb-4">
           <div>
-            <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
-              <Sparkles className="text-cyan-400" size={20} />
-              Zero-Hallucination AI Chat
+            <h2 className="text-base sm:text-xl font-extrabold text-white flex items-center gap-1.5 sm:gap-2">
+              <Sparkles className="text-cyan-400" size={18} />
+              <span>AI Chat</span>
             </h2>
             {document && (
-              <div className="mt-1 flex items-center gap-2 text-xs text-cyan-300">
-                <FileText size={14} />
-                <span className="truncate max-w-sm">{document.title}</span>
+              <div className="mt-0.5 sm:mt-1 flex items-center gap-1.5 text-[11px] sm:text-xs text-cyan-300">
+                <FileText size={12} />
+                <span className="truncate max-w-[160px] sm:max-w-sm">{document.title}</span>
               </div>
             )}
           </div>
 
           <button
             onClick={() => setIsVoiceOpen(true)}
-            className="flex items-center gap-2 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-2 text-xs font-bold text-cyan-300 shadow-md shadow-cyan-500/10 transition hover:bg-cyan-500/20 active:scale-95"
+            className="flex items-center gap-1.5 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1.5 sm:px-3.5 sm:py-2 text-xs font-bold text-cyan-300 shadow-md shadow-cyan-500/10 transition hover:bg-cyan-500/20 active:scale-95"
           >
             <Mic size={14} className="animate-pulse text-cyan-400" />
-            <span>Voice Tutor</span>
+            <span className="text-xs">Voice Tutor</span>
           </button>
         </div>
 
@@ -258,7 +276,7 @@ export default function ChatBox({
               }`}
             >
               <div
-                className={`max-w-[85%] rounded-3xl p-4 shadow-xl backdrop-blur-xl ${
+                className={`max-w-[95%] sm:max-w-[85%] rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-xl backdrop-blur-xl ${
                   msg.role === "user"
                     ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
                     : "border border-white/10 bg-slate-950/70 text-slate-200"
@@ -283,17 +301,46 @@ export default function ChatBox({
 
                   <div className="flex items-center gap-1.5">
                     {msg.role === "assistant" && (
-                      <button
-                        onClick={() => bookmarkAnswer(msg.id, msg.content)}
-                        title="Bookmark Answer"
-                        className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-800 hover:text-amber-300"
-                      >
-                        {bookmarkedId === msg.id ? (
-                          <Check size={14} className="text-amber-400" />
-                        ) : (
-                          <Bookmark size={14} />
-                        )}
-                      </button>
+                      <>
+                        {/* Cute Voice Speaker Button */}
+                        <button
+                          onClick={() => speakWithCuteVoice(msg.content, msg.id)}
+                          title={
+                            speakingMsgId === msg.id
+                              ? "Stop voice speech"
+                              : "Listen with sweet voice"
+                          }
+                          className={`flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium transition ${
+                            speakingMsgId === msg.id
+                              ? "border border-pink-500/40 bg-pink-500/20 text-pink-300 shadow-sm shadow-pink-500/20"
+                              : "text-slate-400 hover:bg-slate-800/80 hover:text-pink-300"
+                          }`}
+                        >
+                          {speakingMsgId === msg.id ? (
+                            <>
+                              <VolumeX size={14} className="animate-pulse text-pink-400" />
+                              <span className="text-[10px] font-semibold text-pink-300">Stop</span>
+                            </>
+                          ) : (
+                            <>
+                              <Volume2 size={14} />
+                              <span className="text-[10px] text-slate-400">Cute Voice</span>
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          onClick={() => bookmarkAnswer(msg.id, msg.content)}
+                          title="Bookmark Answer"
+                          className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-800 hover:text-amber-300"
+                        >
+                          {bookmarkedId === msg.id ? (
+                            <Check size={14} className="text-amber-400" />
+                          ) : (
+                            <Bookmark size={14} />
+                          )}
+                        </button>
+                      </>
                     )}
 
                     <button
@@ -345,9 +392,9 @@ export default function ChatBox({
           ))}
 
           {loading && (
-            <div className="flex items-center gap-2.5 text-xs text-cyan-400 font-medium p-2">
-              <Loader2 className="animate-spin" size={16} />
-              <span>Scanning document vectors and generating grounded response...</span>
+            <div className="flex items-center gap-2.5 text-xs text-slate-400 font-medium p-2">
+              <Loader2 className="animate-spin text-cyan-400" size={15} />
+              <span>Thinking & organizing your answer...</span>
             </div>
           )}
 

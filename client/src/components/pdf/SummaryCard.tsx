@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 
 import type { DocumentItem } from "../../api/document.api";
+import { formatFileSize } from "../../utils/formatters";
 
 interface SummaryCardProps {
   document: DocumentItem | null;
@@ -28,8 +29,7 @@ export default function SummaryCard({
     );
   }
 
-  const fileSize =
-    (document.fileSize / 1024 / 1024).toFixed(2);
+
 
   return (
     <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-lg">
@@ -107,7 +107,7 @@ export default function SummaryCard({
           </div>
 
           <p className="mt-2 font-semibold">
-            {fileSize} MB
+            {formatFileSize(document.fileSize)}
           </p>
 
         </div>

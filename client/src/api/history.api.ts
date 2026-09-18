@@ -17,10 +17,12 @@ export interface ActivityHistoryItem {
 export interface AnalyticsTelemetry {
   documentsCount: number;
   quizzesCount: number;
+  averageQuizScore?: number;
   notesCount: number;
   questionsAsked: number;
   learningStreak: number;
   recentActivities: ActivityHistoryItem[];
+  weeklyActivity?: Array<{ day: string; date: string; count: number; hours: number }>;
 }
 
 export const getActivityHistory = async (

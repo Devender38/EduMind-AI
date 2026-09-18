@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import DashboardLayout from "../layouts/DashboardLayout";
 import UploadCard from "../components/dashboard/UploadCard";
 import { getDocuments, deleteDocument, type DocumentItem } from "../api/document.api";
+import { formatFileSize } from "../utils/formatters";
 
 export default function DocumentsPage() {
   const navigate = useNavigate();
@@ -201,7 +202,7 @@ export default function DocumentsPage() {
 
                     <div className="flex items-center gap-2">
                       <HardDrive size={13} className="text-zinc-500" />
-                      <span>{(doc.fileSize / (1024 * 1024)).toFixed(2)} MB</span>
+                      <span>{formatFileSize(doc.fileSize)}</span>
                     </div>
 
                     {doc.pageCount ? (

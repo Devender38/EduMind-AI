@@ -28,6 +28,7 @@ import notesRoutes from "./routes/notes.routes";
 import bookmarkRoutes from "./routes/bookmark.routes";
 import historyRoutes from "./routes/history.routes";
 import mindmapRoutes from "./routes/mindmap.routes";
+import feedbackRoutes from "./routes/feedback.routes";
 
 // ==============================
 // Load Environment Variables
@@ -175,6 +176,7 @@ app.use("/api/notes", notesRoutes);
 app.use("/api/bookmarks", bookmarkRoutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/mindmap", mindmapRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 // ==============================
 // 404 Handler

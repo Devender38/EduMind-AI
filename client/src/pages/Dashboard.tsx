@@ -101,7 +101,7 @@ export default function Dashboard() {
   const tabs = [
     {
       id: "chat" as StudyTab,
-      label: "AI Neural Chat",
+      label: "Chat",
       icon: MessageSquare,
       color: "text-blue-400",
       activeBg:
@@ -109,7 +109,7 @@ export default function Dashboard() {
     },
     {
       id: "notes" as StudyTab,
-      label: "AI Notes",
+      label: "Notes",
       icon: FileText,
       color: "text-cyan-400",
       activeBg:
@@ -125,7 +125,7 @@ export default function Dashboard() {
     },
     {
       id: "flashcards" as StudyTab,
-      label: "3D Flashcards",
+      label: "Flashcards",
       icon: Layers,
       color: "text-cyan-400",
       activeBg:
@@ -133,7 +133,7 @@ export default function Dashboard() {
     },
     {
       id: "quiz" as StudyTab,
-      label: "Practice Quiz",
+      label: "Quizzes",
       icon: Brain,
       color: "text-purple-400",
       activeBg:
@@ -141,7 +141,7 @@ export default function Dashboard() {
     },
     {
       id: "summary" as StudyTab,
-      label: "Deep Summary",
+      label: "Summary",
       icon: Sparkles,
       color: "text-emerald-400",
       activeBg:
@@ -160,16 +160,16 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        {/* Animated Greeting Banner */}
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-cyan-950/40 via-slate-900/80 to-indigo-950/40 p-6 shadow-2xl backdrop-blur-2xl md:p-8">
-          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500/15 blur-3xl" />
-          <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-indigo-500/15 blur-3xl" />
+        {/* Greeting Banner */}
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-xl backdrop-blur-2xl md:p-8">
+          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-500/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl" />
 
           <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-center">
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-semibold text-cyan-300">
-                <Sparkles size={13} className="text-cyan-400 animate-pulse" />
-                <span>AI Cognition Workspace Active</span>
+                <Sparkles size={13} className="text-cyan-400" />
+                <span>Study Workspace</span>
               </div>
 
               <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl lg:text-4xl">
@@ -177,11 +177,11 @@ export default function Dashboard() {
                 <span className="text-gradient-cyan">
                   {user?.name || "Student"}
                 </span>{" "}
-                ✨
+                👋
               </h1>
 
               <p className="max-w-2xl text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Your neural vectors and study memory are synchronized. Select a document below to chat with citations, drill 3D flashcards, explore interactive mind maps, or generate high-yield notes.
+                Select a document below to ask questions, practice quizzes, review flashcards, or create study notes.
               </p>
             </div>
 
@@ -191,8 +191,8 @@ export default function Dashboard() {
                 onClick={() => setActiveTab("chat")}
                 className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-200 backdrop-blur-xl transition hover:border-cyan-400/40 hover:bg-slate-800 hover:text-white"
               >
-                <Zap size={14} className="text-cyan-400" />
-                <span>Ask AI</span>
+                <MessageSquare size={14} className="text-cyan-400" />
+                <span>Chat</span>
               </button>
 
               <button
@@ -200,7 +200,7 @@ export default function Dashboard() {
                 className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-200 backdrop-blur-xl transition hover:border-cyan-400/40 hover:bg-slate-800 hover:text-white"
               >
                 <FileText size={14} className="text-cyan-400" />
-                <span>AI Notes</span>
+                <span>Notes</span>
               </button>
 
               <button
@@ -216,7 +216,7 @@ export default function Dashboard() {
                 className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-xs font-semibold text-amber-300 backdrop-blur-xl transition hover:bg-amber-500/20"
               >
                 <GraduationCap size={14} className="text-amber-400" />
-                <span>Exam Cram</span>
+                <span>Planner</span>
               </button>
             </div>
           </div>
@@ -309,6 +309,7 @@ export default function Dashboard() {
                 <QuizCard
                   key={selectedDocument?._id || "none"}
                   document={selectedDocument}
+                  onQuizComplete={refreshDashboard}
                 />
               )}
 

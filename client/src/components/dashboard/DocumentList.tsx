@@ -20,6 +20,7 @@ import {
 } from "../../api/document.api";
 
 import type { DocumentItem } from "../../api/document.api";
+import { formatFileSize } from "../../utils/formatters";
 
 interface Props {
   refreshKey: number;
@@ -192,7 +193,7 @@ export default function DocumentList({
                         <span>•</span>
                         <span className="flex items-center gap-1">
                           <HardDrive size={11} />
-                          {(doc.fileSize / 1024 / 1024).toFixed(2)} MB
+                          {formatFileSize(doc.fileSize)}
                         </span>
                       </div>
 

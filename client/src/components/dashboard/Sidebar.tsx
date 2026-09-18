@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   LayoutDashboard,
   FileText,
@@ -11,8 +12,10 @@ import {
   Sparkles,
   Zap,
   X,
+  MessageSquareHeart,
 } from "lucide-react";
 import { NavLink, useNavigate, Link } from "react-router-dom";
+import FeedbackModal from "../feedback/FeedbackModal";
 import { useAuthStore } from "../../store/authStore";
 
 interface SidebarProps {
@@ -20,6 +23,7 @@ interface SidebarProps {
 }
 
 function Sidebar({ onClose }: SidebarProps) {
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const navigate = useNavigate();
   const { user, logout: storeLogout } = useAuthStore();
 
@@ -33,8 +37,6 @@ function Sidebar({ onClose }: SidebarProps) {
       name: "Dashboard",
       icon: LayoutDashboard,
       path: "/dashboard",
-      badge: "Hub",
-      badgeClass: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
     },
     {
       name: "Documents",
@@ -42,7 +44,7 @@ function Sidebar({ onClose }: SidebarProps) {
       path: "/documents",
     },
     {
-      name: "AI Chat",
+      name: "Chat",
       icon: MessageSquare,
       path: "/chat",
     },
@@ -185,17 +187,33 @@ function Sidebar({ onClose }: SidebarProps) {
         })}
       </nav>
 
-      {/* Pro Study Assistant Badge */}
+      {/* Study Assistant Info */}
       <div className="p-4">
-        <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/10 via-blue-600/5 to-transparent p-3.5 backdrop-blur-xl">
-          <div className="flex items-center gap-2 text-cyan-300 text-xs font-bold">
-            <Zap size={14} className="text-cyan-400 animate-pulse" />
-            <span>Neural RAG 3.0</span>
+        <div className="rounded-2xl border border-white/5 bg-slate-900/60 p-3.5 backdrop-blur-xl">
+          <div className="flex items-center gap-2 text-slate-200 text-xs font-semibold">
+            <Sparkles size={14} className="text-cyan-400" />
+            <span>Study Assistant</span>
           </div>
           <p className="mt-1 text-[11px] text-slate-400 leading-relaxed">
-            Active recall vectors & multi-doc reasoning enabled.
+            Upload notes, take quizzes, and track your study goals.
           </p>
         </div>
+      </div>
+
+      {/* Feedback & Review Button */}
+      <div className="px-4 pb-2">
+        <button
+          onClick={() => setIsFeedbackOpen(true)}
+          className="group flex w-full items-center justify-between rounded-xl border border-pink-500/20 bg-pink-500/10 px-4 py-2.5 text-xs font-semibold text-pink-300 transition hover:bg-pink-500/20 hover:border-pink-500/40 shadow-sm"
+        >
+          <div className="flex items-center gap-2.5">
+            <MessageSquareHeart size={16} className="text-pink-400 group-hover:scale-110 transition" />
+            <span>Give Feedback</span>
+          </div>
+          <span className="rounded-full bg-pink-500/20 px-2 py-0.5 text-[9px] font-bold text-pink-300">
+            Review
+          </span>
+        </button>
       </div>
 
       {/* Logout */}
@@ -208,6 +226,11 @@ function Sidebar({ onClose }: SidebarProps) {
           Logout
         </button>
       </div>
+
+      <FeedbackModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+      />
     </aside>
   );
 }

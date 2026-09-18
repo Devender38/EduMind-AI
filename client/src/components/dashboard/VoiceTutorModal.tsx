@@ -13,6 +13,11 @@ import {
 import toast from "react-hot-toast";
 import { askQuestion } from "../../api/chat.api";
 import type { DocumentItem } from "../../api/document.api";
+import {
+  speakWithCuteVoice,
+  stopCuteSpeech,
+  addSpeechStateListener,
+} from "../../utils/cuteSpeech";
 
 interface Props {
   isOpen: boolean;
@@ -118,38 +123,23 @@ export default function VoiceTutorModal({
   };
 
   const speakText = (text: string) => {
-    if (!synthRef.current) return;
-    stopSpeaking();
-
-    // Clean markdown symbols for natural speech
-    const cleanText = text
-      .replace(/[#*_`~-]/g, "")
-      .replace(/\[.*?\]\(.*?\)/g, "")
-      .substring(0, 1000);
-
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-
-    utterance.onstart = () => setIsPlayingAudio(true);
-    utterance.onend = () => setIsPlayingAudio(false);
-    utterance.onerror = () => setIsPlayingAudio(false);
-
-    synthRef.current.speak(utterance);
+    stopCuteSpeech();
+    setIsPlayingAudio(true);
+    speakWithCuteVoice(text, "voice-tutor-modal", () => {
+      setIsPlayingAudio(false);
+    });
   };
 
   const stopSpeaking = () => {
-    if (synthRef.current) {
-      synthRef.current.cancel();
-      setIsPlayingAudio(false);
-    }
+    stopCuteSpeech();
+    setIsPlayingAudio(false);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-xl overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-slate-900 via-slate-950 to-[#07090e] p-6 shadow-2xl backdrop-blur-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-4 backdrop-blur-md">
+      <div className="relative my-auto flex max-h-[92vh] w-full max-w-xl flex-col overflow-y-auto rounded-3xl border border-white/10 bg-gradient-to-b from-slate-900 via-slate-950 to-[#07090e] p-4 sm:p-6 shadow-2xl backdrop-blur-2xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-4">
           <div className="flex items-center gap-2.5">

@@ -48,63 +48,45 @@ export default function Landing() {
       a: "Yes! EduMind AI supports high-density academic textbooks, slide decks, research papers, and syllabi up to 100MB with automated OCR, hierarchical chunking, and math formula preservation.",
     },
     {
-      q: "How does the 1-Day Exam Cram Study Planner work?",
-      a: "Our neural planner scans your document's chapter structure, identifies high-yield exam topics, calculates concept difficulty, and crafts an hour-by-hour active recall timetable with scheduled flashcard drills and formula reviews.",
-    },
-    {
-      q: "Who developed EduMind AI?",
-      a: "EduMind AI was architected and engineered by Devender and Harsh Roy as a state-of-the-art AI academic companion designed to eliminate study burnout and accelerate deep learning.",
+      q: "How does the Study Planner work?",
+      a: "The planner analyzes your study document, organizes key topics, and creates a clear, structured study timetable with scheduled practice reviews.",
     },
     {
       q: "Is my personal research and document data secure?",
-      a: "Your files are stored in an encrypted private vault with TLS 1.3 encryption. Your data is never used to train public foundation models and can be permanently deleted at any time.",
+      a: "Your files are stored securely with encryption. Your data is private to your account and can be deleted at any time.",
     },
   ];
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#07090e] text-slate-100 selection:bg-cyan-500 selection:text-white">
-      {/* ========================================================
-          ANIMATED AURORA & MESH BACKGROUND GRADIENTS
-          ======================================================== */}
+      {/* Background Gradients */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        {/* Animated Mesh Grid */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-25" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-20" />
         <div className="absolute inset-0 bg-radial-vignette" />
 
-        {/* Ambient AI Robot Background Watermark */}
-        <div className="absolute top-10 -right-20 h-[750px] w-[750px] opacity-10 blur-[1px] pointer-events-none select-none mix-blend-screen hidden lg:block">
-          <img
-            src="/ai-robot-hero.png"
-            alt="EduMind AI Companion"
-            className="h-full w-full object-contain filter drop-shadow-[0_0_100px_rgba(34,211,238,0.35)]"
-          />
-        </div>
-
-        {/* Floating Glowing Cool Orbs */}
-        <div className="animate-mesh-drift-1 absolute -top-40 left-1/4 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-cyan-500/20 via-sky-400/10 to-transparent blur-[120px]" />
-        <div className="animate-mesh-drift-2 absolute top-1/3 -right-20 h-[550px] w-[550px] rounded-full bg-gradient-to-bl from-indigo-500/15 via-blue-600/10 to-transparent blur-[140px]" />
-        <div className="animate-pulse-glow absolute top-2/3 left-10 h-[450px] w-[450px] rounded-full bg-gradient-to-tr from-teal-400/10 via-cyan-600/10 to-transparent blur-[130px]" />
+        {/* Soft Background Accents */}
+        <div className="absolute -top-40 left-1/4 h-[450px] w-[450px] rounded-full bg-cyan-500/10 blur-[130px]" />
+        <div className="absolute top-1/3 -right-20 h-[450px] w-[450px] rounded-full bg-indigo-500/10 blur-[140px]" />
       </div>
 
       {/* ========================================================
-          TOP NAVIGATION BAR (FROSTED GLASS)
+          TOP NAVIGATION BAR
           ======================================================== */}
       <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#07090e]/80 backdrop-blur-2xl transition-all duration-300">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3.5 lg:px-8">
           {/* Logo */}
           <Link to="/" className="group flex items-center gap-3">
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 shadow-lg shadow-cyan-500/25 ring-1 ring-white/20 transition group-hover:scale-105">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 shadow-md shadow-cyan-500/20 ring-1 ring-white/20 transition group-hover:scale-105">
               <Brain size={22} className="text-white" />
-              <div className="absolute inset-0 rounded-2xl bg-cyan-400 opacity-0 blur transition group-hover:opacity-40" />
             </div>
             <div>
               <span className="text-xl font-extrabold tracking-tight text-white">
                 EduMind <span className="text-gradient-cyan">AI</span>
               </span>
               <div className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">
-                  RAG 3.0 Platform
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="text-[10px] font-medium text-slate-400">
+                  Study Platform
                 </span>
               </div>
             </div>
@@ -116,13 +98,10 @@ export default function Landing() {
               Features
             </a>
             <a href="#interactive-demo" className="transition hover:text-cyan-400">
-              Live Sandbox
+              Preview
             </a>
             <a href="#comparison" className="transition hover:text-cyan-400">
               Why EduMind
-            </a>
-            <a href="#developers" className="transition hover:text-cyan-400">
-              Developers
             </a>
             <a href="#faq" className="transition hover:text-cyan-400">
               FAQ
@@ -131,11 +110,6 @@ export default function Landing() {
 
           {/* Action CTAs */}
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-cyan-500/25 bg-cyan-500/10 px-3 py-1 text-[11px] font-semibold text-cyan-300">
-              <Code2 size={13} className="text-cyan-400" />
-              <span>Devender & Harsh Roy</span>
-            </div>
-
             <Link
               to="/login"
               className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-semibold text-slate-200 backdrop-blur-md transition hover:border-white/20 hover:bg-white/10 hover:text-white"
@@ -155,7 +129,7 @@ export default function Landing() {
       </header>
 
       {/* ========================================================
-          HERO SECTION (CLEAN, ELEGANT, PROFESSIONAL ANIMATED UI)
+          HERO SECTION
           ======================================================== */}
       <section className="relative pt-12 pb-16 md:pt-16 md:pb-24 lg:pt-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -163,25 +137,22 @@ export default function Landing() {
             {/* Left Hero Content */}
             <div className="text-center lg:col-span-7 lg:text-left space-y-6">
               {/* Product Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-semibold text-cyan-300 shadow-inner backdrop-blur-xl">
-                <Sparkles size={14} className="text-cyan-400 animate-pulse" />
-                <span>Next-Gen RAG Study Platform • 100% Free Forever</span>
+              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-semibold text-cyan-300 backdrop-blur-xl">
+                <Sparkles size={14} className="text-cyan-400" />
+                <span>Smart Study Platform • Free to Use</span>
               </div>
 
               {/* Hero Main Heading */}
               <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-6xl xl:text-7xl leading-[1.12]">
-                Master Any Subject with{" "}
+                Learn Smarter,{" "}
                 <span className="text-gradient-cool block sm:inline">
-                  AI-Powered Intelligence
+                  Remember More
                 </span>
               </h1>
 
               {/* Subtitle */}
               <p className="max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-                Upload textbooks, research papers, and lecture slides. Instantly generate{" "}
-                <strong className="text-white">Active Recall study plans</strong>,{" "}
-                <strong className="text-cyan-300">3D flashcard decks</strong>,{" "}
-                <strong className="text-indigo-300">interactive mind maps</strong>, and chat with pinpoint page citations.
+                Upload textbooks, lecture notes, or research papers. Ask questions, practice interactive quizzes, review flashcards, and get structured notes in seconds.
               </p>
 
               {/* Main Action Buttons */}
@@ -791,98 +762,6 @@ export default function Landing() {
       </section>
 
       {/* ========================================================
-          DEVELOPERS & CREATORS SECTION (DEVENDER & HARSH ROY)
-          ======================================================== */}
-      <section id="developers" className="relative py-24 border-t border-white/10 bg-gradient-to-b from-[#07090e] via-slate-950 to-[#07090e]">
-        <div className="mx-auto max-w-6xl px-6 lg:px-8">
-          <div className="text-center space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-semibold text-cyan-300">
-              <Code2 size={14} />
-              <span>Engineering & Innovation</span>
-            </div>
-            <h2 className="text-3xl font-black tracking-tight text-white sm:text-5xl">
-              Meet the Developers Behind <span className="text-gradient-cyan">EduMind AI</span>
-            </h2>
-            <p className="mx-auto max-w-xl text-sm text-slate-400">
-              Architected with precision by passionate engineers dedicated to revolutionizing AI-assisted education.
-            </p>
-          </div>
-
-          <div className="mt-14 grid grid-cols-1 gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-            {/* Developer 1: Devender */}
-            <div className="group relative overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-b from-slate-900/90 via-slate-950/95 to-[#07090e] p-8 shadow-2xl backdrop-blur-2xl transition duration-300 hover:scale-[1.02] hover:border-cyan-400">
-              <div className="flex items-start justify-between">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-white font-black text-2xl shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/40">
-                  D
-                </div>
-                <span className="rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-bold text-cyan-300 border border-cyan-500/30">
-                  Lead Software Architect
-                </span>
-              </div>
-
-              <div className="mt-6 space-y-2">
-                <h3 className="text-2xl font-black text-white group-hover:text-cyan-300 transition">
-                  Devender
-                </h3>
-                <p className="text-xs font-semibold text-cyan-400">
-                  Full Stack Engineer & AI Systems Architect
-                </p>
-                <p className="text-xs text-slate-300 leading-relaxed pt-2">
-                  Specializing in distributed RAG architectures, real-time vector indexing with FAISS, and high-performance full-stack web applications.
-                </p>
-              </div>
-
-              <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t border-white/10">
-                {["RAG 3.0", "FastAPI", "React 19", "MongoDB", "Vector Embeddings"].map((tech, tIdx) => (
-                  <span
-                    key={tIdx}
-                    className="rounded-lg bg-white/5 px-2.5 py-1 text-[10px] font-semibold text-slate-300 border border-white/10"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Developer 2: Harsh Roy */}
-            <div className="group relative overflow-hidden rounded-3xl border border-indigo-500/30 bg-gradient-to-b from-slate-900/90 via-slate-950/95 to-[#07090e] p-8 shadow-2xl backdrop-blur-2xl transition duration-300 hover:scale-[1.02] hover:border-indigo-400">
-              <div className="flex items-start justify-between">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white font-black text-2xl shadow-lg shadow-indigo-500/30 ring-2 ring-indigo-400/40">
-                  H
-                </div>
-                <span className="rounded-full bg-indigo-500/15 px-3 py-1 text-[11px] font-bold text-indigo-300 border border-indigo-500/30">
-                  Co-Architect & UI/UX Lead
-                </span>
-              </div>
-
-              <div className="mt-6 space-y-2">
-                <h3 className="text-2xl font-black text-white group-hover:text-indigo-300 transition">
-                  Harsh Roy
-                </h3>
-                <p className="text-xs font-semibold text-indigo-400">
-                  Senior AI Engineer & UI/UX Specialist
-                </p>
-                <p className="text-xs text-slate-300 leading-relaxed pt-2">
-                  Focusing on responsive design systems, cognitive ergonomics, voice synthesis, and interactive visualization algorithms.
-                </p>
-              </div>
-
-              <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t border-white/10">
-                {["Mind Mapping", "TTS Voice AI", "TailwindCSS", "Node.js", "Prompt Engineering"].map((tech, tIdx) => (
-                  <span
-                    key={tIdx}
-                    className="rounded-lg bg-white/5 px-2.5 py-1 text-[10px] font-semibold text-slate-300 border border-white/10"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================
           FAQ SECTION (INTERACTIVE ACCORDION)
           ======================================================== */}
       <section id="faq" className="relative py-20 border-t border-white/10 bg-gradient-to-b from-[#07090e] via-slate-950 to-[#07090e]">
@@ -999,12 +878,12 @@ export default function Landing() {
             </div>
 
             <div className="space-y-3">
-              <h4 className="font-bold text-white">Developers</h4>
+              <h4 className="font-bold text-white">Resources</h4>
               <ul className="space-y-2 text-slate-400">
-                <li className="text-white font-medium">Devender</li>
-                <li className="text-white font-medium">Harsh Roy</li>
-                <li><span className="text-slate-400">Open Source RAG 3.0</span></li>
-                <li><span className="text-slate-400">Full Stack AI Architecture</span></li>
+                <li><a href="#features" className="hover:text-white">Study Guides</a></li>
+                <li><a href="#interactive-demo" className="hover:text-white">Platform Preview</a></li>
+                <li><a href="#faq" className="hover:text-white">Frequently Asked Questions</a></li>
+                <li><Link to="/register" className="hover:text-white">Student Sign Up</Link></li>
               </ul>
             </div>
 
@@ -1020,9 +899,7 @@ export default function Landing() {
 
           <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row text-[11px] text-slate-500">
             <div className="flex items-center gap-1.5 text-slate-400">
-              <span>Architected & Built with</span>
-              <Heart size={13} className="text-rose-500 fill-current" />
-              <span>by <strong className="text-slate-200">Devender</strong> and <strong className="text-slate-200">Harsh Roy</strong></span>
+              <span>Crafted for students and modern learners</span>
             </div>
             <div>
               © {new Date().getFullYear()} EduMind AI. All rights reserved.

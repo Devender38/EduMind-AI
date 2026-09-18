@@ -4,6 +4,7 @@ import Document from "../models/Document";
 import Conversation from "../models/Conversation";
 import Chat from "../models/Chat";
 import Quiz from "../models/Quiz";
+import ActivityLog from "../models/ActivityLog";
 import { createLogger } from "../utils/logger";
 
 const logger = createLogger("DashboardController");
@@ -58,16 +59,38 @@ export const getDashboardStats = async (
         .lean(),
     ]);
 
-    // 3. Quizzes stats
-    const quizzes = await Quiz.find({ user: userId });
-    const quizzesTaken = quizzes.length;
+    // 3. Quizzes stats (fetch from Quiz and fallback/combine with ActivityLog)
+    const [quizzes, quizActivities] = await Promise.all([
+      Quiz.find({
+        $or: [{ user: userId }, { userId }],
+      }),
+      ActivityLog.find({
+        userId,
+        activityType: "quiz",
+      }),
+    ]);
+
     const completedQuizzes = quizzes.filter((q) => q.completed);
-    const avgScore = completedQuizzes.length > 0
-      ? Math.round(
-          completedQuizzes.reduce((acc, q) => acc + (q.totalQuestions > 0 ? (q.score / q.totalQuestions) * 100 : 0), 0) /
-            completedQuizzes.length
-        )
-      : 0;
+    let quizzesTaken = completedQuizzes.length;
+    let avgScore = 0;
+
+    if (completedQuizzes.length > 0) {
+      avgScore = Math.round(
+        completedQuizzes.reduce(
+          (acc, q) => acc + (q.totalQuestions > 0 ? (q.score / q.totalQuestions) * 100 : 0),
+          0
+        ) / completedQuizzes.length
+      );
+    } else if (quizActivities.length > 0) {
+      quizzesTaken = quizActivities.length;
+      avgScore = Math.round(
+        quizActivities.reduce((acc, a) => {
+          const score = a.metadata?.score || 0;
+          const total = a.metadata?.totalQuestions || 0;
+          return acc + (total > 0 ? (score / total) * 100 : 0);
+        }, 0) / quizActivities.length
+      );
+    }
 
     // 4. Formatted Recent Activity Feed
     const recentActivity = recentChats.map((c: any) => ({

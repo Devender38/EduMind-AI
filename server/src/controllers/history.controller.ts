@@ -75,13 +75,15 @@ export class HistoryController {
     const userId = (req as any).user?.id || (req as any).user?._id;
 
     try {
-      const [totalDocs, totalQuizzes, totalNotes, totalChats, activityLogs] =
+      const userFilter = { $or: [{ user: userId }, { userId }] };
+      const [totalDocs, totalQuizzes, totalNotes, totalChats, activityLogs, completedQuizzes] =
         await Promise.all([
-          Document.countDocuments({ userId }),
-          Quiz.countDocuments({ userId }),
-          Note.countDocuments({ userId }),
-          Chat.countDocuments({ userId }),
+          Document.countDocuments(userFilter),
+          Quiz.countDocuments(userFilter),
+          Note.countDocuments(userFilter),
+          Chat.countDocuments(userFilter),
           ActivityLog.find({ userId }).sort({ createdAt: -1 }).limit(100),
+          Quiz.find({ ...userFilter, completed: true }).select("score totalQuestions createdAt"),
         ]);
 
       // Calculate streak & study distribution
@@ -93,15 +95,52 @@ export class HistoryController {
 
       const streakDays = Math.max(1, uniqueDays.size);
 
+      // Average Quiz Score
+      const averageQuizScore = completedQuizzes.length > 0
+        ? Math.round(
+            completedQuizzes.reduce(
+              (acc, q) => acc + (q.totalQuestions > 0 ? (q.score / q.totalQuestions) * 100 : 0),
+              0
+            ) / completedQuizzes.length
+          )
+        : 0;
+
+      // Last 7 days dynamic activity breakdown
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const last7Days: Array<{ day: string; date: string; count: number; hours: number }> = [];
+      const now = new Date();
+
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split("T")[0];
+        const dayName = days[d.getDay()];
+
+        const dayLogs = activityLogs.filter(
+          (log) => new Date(log.createdAt).toISOString().split("T")[0] === dateStr
+        );
+        const count = dayLogs.length;
+        const hours = count > 0 ? +(count * 0.4).toFixed(1) : 0;
+
+        last7Days.push({
+          day: dayName,
+          date: dateStr,
+          count,
+          hours,
+        });
+      }
+
       return res.status(200).json({
         success: true,
         telemetry: {
           documentsCount: totalDocs,
           quizzesCount: totalQuizzes,
+          averageQuizScore,
           notesCount: totalNotes,
           questionsAsked: totalChats,
           learningStreak: streakDays,
           recentActivities: activityLogs.slice(0, 10),
+          weeklyActivity: last7Days,
         },
       });
     } catch (error: any) {

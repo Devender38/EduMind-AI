@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import {
   getQuiz,
   regenerateQuiz,
+  submitQuiz,
   type QuizQuestion,
 } from "../../api/quiz.api";
 import { logActivity } from "../../api/history.api";
@@ -26,6 +27,7 @@ import type { DocumentItem } from "../../api/document.api";
 
 interface Props {
   document: DocumentItem | null;
+  onQuizComplete?: () => void;
 }
 
 // Robust text normalizer that strips option letters like "A)", "Option B:", etc.
@@ -83,7 +85,7 @@ export const checkIsCorrect = (
   return false;
 };
 
-export default function QuizCard({ document }: Props) {
+export default function QuizCard({ document, onQuizComplete }: Props) {
   const [loading, setLoading] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -98,9 +100,6 @@ export default function QuizCard({ document }: Props) {
       setLoading(true);
       const data = await getQuiz(document._id);
       setQuestions(data.quiz || []);
-      setAnswers({});
-      setCurrent(0);
-      setSubmitted(false);
     } catch (err) {
       console.error("Failed loading quiz:", err);
       toast.error("Failed loading quiz.");
@@ -110,7 +109,7 @@ export default function QuizCard({ document }: Props) {
   }, [document]);
 
   const handleRegenerate = async () => {
-    if (!document || regenerating) return;
+    if (!document) return;
     try {
       setRegenerating(true);
       const data = await regenerateQuiz(document._id);
@@ -135,13 +134,12 @@ export default function QuizCard({ document }: Props) {
     }));
   };
 
-  // Calculate score using bulletproof matcher
   const score = useMemo(() => {
     let count = 0;
     questions.forEach((q, idx) => {
       const selected = answers[idx];
-      if (selected) {
-        const optIdx = q.options.findIndex((opt) => opt === selected);
+      if (selected !== undefined) {
+        const optIdx = q.options.indexOf(selected);
         if (checkIsCorrect(selected, q.answer, optIdx >= 0 ? optIdx : 0)) {
           count++;
         }
@@ -154,8 +152,26 @@ export default function QuizCard({ document }: Props) {
     setSubmitted(true);
     toast.success(`Quiz Completed! Score: ${score}/${questions.length}`);
 
-    // Log to telemetry
     if (document) {
+      // 1. Submit and persist to Quiz collection
+      try {
+        await submitQuiz(document._id, {
+          score,
+          totalQuestions: questions.length,
+          answers,
+          questions,
+        });
+
+        // 2. Refresh parent dashboard & stats cards
+        if (onQuizComplete) {
+          onQuizComplete();
+        }
+        window.dispatchEvent(new CustomEvent("refreshDashboard"));
+      } catch (err) {
+        console.error("Failed saving quiz results to database:", err);
+      }
+
+      // 3. Also log to telemetry activity history
       logActivity({
         documentId: document._id,
         activityType: "quiz",
@@ -163,7 +179,7 @@ export default function QuizCard({ document }: Props) {
         metadata: {
           score,
           totalQuestions: questions.length,
-          accuracy: Math.round((score / questions.length) * 100),
+          accuracy: questions.length > 0 ? Math.round((score / questions.length) * 100) : 0,
         },
       }).catch(console.error);
     }

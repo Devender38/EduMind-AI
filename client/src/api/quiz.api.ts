@@ -32,3 +32,21 @@ export const regenerateQuiz = async (
   );
   return response.data;
 };
+
+export interface SubmitQuizPayload {
+  score: number;
+  totalQuestions: number;
+  answers?: Record<number, string>;
+  questions?: QuizQuestion[];
+}
+
+export const submitQuiz = async (
+  documentId: string,
+  payload: SubmitQuizPayload
+): Promise<any> => {
+  const response = await api.post(
+    `/quiz/${documentId}/submit`,
+    payload
+  );
+  return response.data;
+};
