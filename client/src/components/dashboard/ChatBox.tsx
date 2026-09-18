@@ -302,29 +302,29 @@ export default function ChatBox({
                   <div className="flex items-center gap-1.5">
                     {msg.role === "assistant" && (
                       <>
-                        {/* Cute Voice Speaker Button */}
+                        {/* Voice Tutor Speaker Button */}
                         <button
                           onClick={() => speakWithCuteVoice(msg.content, msg.id)}
                           title={
                             speakingMsgId === msg.id
-                              ? "Stop voice speech"
-                              : "Listen with sweet voice"
+                              ? "Stop voice"
+                              : "Listen with Voice Tutor"
                           }
                           className={`flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium transition ${
                             speakingMsgId === msg.id
-                              ? "border border-pink-500/40 bg-pink-500/20 text-pink-300 shadow-sm shadow-pink-500/20"
-                              : "text-slate-400 hover:bg-slate-800/80 hover:text-pink-300"
+                              ? "border border-cyan-500/40 bg-cyan-500/20 text-cyan-300 shadow-sm shadow-cyan-500/20"
+                              : "text-slate-400 hover:bg-slate-800/80 hover:text-cyan-300"
                           }`}
                         >
                           {speakingMsgId === msg.id ? (
                             <>
-                              <VolumeX size={14} className="animate-pulse text-pink-400" />
-                              <span className="text-[10px] font-semibold text-pink-300">Stop</span>
+                              <VolumeX size={14} className="animate-pulse text-cyan-400" />
+                              <span className="text-[10px] font-semibold text-cyan-300">Stop</span>
                             </>
                           ) : (
                             <>
                               <Volume2 size={14} />
-                              <span className="text-[10px] text-slate-400">Cute Voice</span>
+                              <span className="text-[10px] text-slate-400">Voice Tutor</span>
                             </>
                           )}
                         </button>

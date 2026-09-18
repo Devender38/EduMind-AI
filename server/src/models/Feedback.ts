@@ -46,6 +46,8 @@ const FeedbackSchema = new Schema<IFeedback>(
       enum: [
         "General Review",
         "AI Answers & Speed",
+        "AI Answers",
+        "Voice Tutor",
         "Cute Voice Tutor",
         "Feature Request",
         "Bug / Issue",

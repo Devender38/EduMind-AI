@@ -26,8 +26,8 @@ Traditional study tools either require manual summarization or produce generic, 
 - **Bilingual (English & Hindi/Hinglish)**: Ask questions in English, Hindi, or Hinglish, and get articulate, friendly explanations in the same language.
 - **Strict Grounding**: Answers are referenced directly against your uploaded documents with verifiable citations.
 
-### 2. 🎀 Cute Voice Speech Tutor
-- Integrated **Speech Synthesis Engine** with custom pitch tuning (`pitch: 1.18`, `rate: 1.04`) for a sweet, friendly, natural female voice (`Microsoft Jenny`, `Microsoft Zira`, `Google UK English Female`, etc.).
+### 2. 🎙️ Interactive Voice Tutor
+- Integrated **Speech Synthesis Engine** with natural conversational voice (`Microsoft Jenny`, `Microsoft Zira`, `Google English Female`, etc.).
 - **Smart Text Filtering**: Code blocks, markdown symbols, and raw emojis are automatically stripped during speech generation so the audio sounds fluid and human.
 - Available directly on every chat message bubble and in the dedicated **Interactive Voice Tutor Modal**.
 
@@ -66,7 +66,7 @@ Traditional study tools either require manual summarization or produce generic, 
 | **Zustand** | Lightweight client state management (Auth, Sessions) |
 | **Axios** | HTTP client with automatic JWT refresh interceptors |
 | **React Markdown & Remark GFM** | Rich markdown rendering with tables and code blocks |
-| **Web Speech API** | Client-side Voice Recognition & Cute Voice Synthesis |
+| **Web Speech API** | Client-side Voice Recognition & Voice Tutor Speech Synthesis |
 
 ### **Backend (Server)**
 | Technology | Purpose |
@@ -92,7 +92,7 @@ flowchart TD
     F --> G[AIService fetches grounded document context]
     G --> H[OpenRouter / Gemini 2.5 Flash processes with ChatGPT Prompt]
     H --> I[Structured Answer returned with Citations]
-    I --> J[Student reads markdown OR clicks 'Cute Voice' to listen]
+    I --> J[Student reads markdown OR clicks 'Voice Tutor' to listen]
 ```
 
 1. **Upload & Ingestion**: When a PDF is uploaded, it is stored in Cloudinary, text content is extracted and indexed with chunk-level metadata.

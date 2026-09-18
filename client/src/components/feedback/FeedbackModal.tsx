@@ -26,13 +26,13 @@ interface Props {
 const CATEGORIES = [
   "General Review",
   "AI Answers",
-  "Cute Voice Tutor",
+  "Voice Tutor",
   "Feature Request",
   "Bug / Issue",
 ];
 
 const QUICK_SUGGESTIONS = [
-  "Loved the Cute Voice! 🎀",
+  "Voice Tutor is Great 🎙️",
   "ChatGPT Structured Answers 🤖",
   "Clean & Fast UI ✨",
   "Helpful for Exams 🎓",
