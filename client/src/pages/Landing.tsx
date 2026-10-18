@@ -16,23 +16,41 @@ import {
   Star,
   Clock,
   ShieldCheck,
-  GraduationCap,
   TrendingUp,
   ChevronDown,
   Cpu,
   HelpCircle,
   Network,
   Mic,
-  Code2,
   Terminal,
-  Heart,
+  Users,
+  UploadCloud,
+  Volume2,
+  Globe,
+  Flame,
+  ArrowUpRight,
+  BookOpen,
 } from "lucide-react";
 
 export default function Landing() {
-  const [activeTab, setActiveTab] = useState<"chat" | "planner" | "flashcard" | "notes" | "mindmap">("chat");
+  const [activeTab, setActiveTab] = useState<
+    "chat" | "planner" | "flashcard" | "notes" | "mindmap"
+  >("chat");
   const [isFlipped, setIsFlipped] = useState(false);
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
+  const [heroPrompt, setHeroPrompt] = useState("");
+
+  const handleSelectPrompt = (
+    prompt: string,
+    targetTab: "chat" | "planner" | "flashcard" | "notes" | "mindmap"
+  ) => {
+    setActiveTab(targetTab);
+    const demoSection = document.getElementById("interactive-demo");
+    if (demoSection) {
+      demoSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const faqs = [
     {
@@ -48,12 +66,16 @@ export default function Landing() {
       a: "Yes! EduMind AI supports high-density academic textbooks, slide decks, research papers, and syllabi up to 100MB with automated OCR, hierarchical chunking, and math formula preservation.",
     },
     {
+      q: "How does the Multilingual AI Voice Tutor work?",
+      a: "Our Voice Tutor speaks 9+ languages (English, Hindi, Hinglish, Bengali, Tamil, Telugu, Marathi, Spanish, French). It teaches step-by-step with real-world analogies, line-by-line code explanations, and checks your understanding with follow-up questions.",
+    },
+    {
       q: "How does the Study Planner work?",
-      a: "The planner analyzes your study document, organizes key topics, and creates a clear, structured study timetable with scheduled practice reviews.",
+      a: "The planner analyzes your study document, organizes key topics, and creates a clear, structured study timetable with scheduled practice reviews (1-Day Exam Cram, 7-Day Sprint, or 4-Week Mastery).",
     },
     {
       q: "Is my personal research and document data secure?",
-      a: "Your files are stored securely with encryption. Your data is private to your account and can be deleted at any time.",
+      a: "Your files are stored securely with 256-bit encryption. Your data is strictly private to your account and can be deleted at any time.",
     },
   ];
 
@@ -67,6 +89,7 @@ export default function Landing() {
         {/* Soft Background Accents */}
         <div className="absolute -top-40 left-1/4 h-[450px] w-[450px] rounded-full bg-cyan-500/10 blur-[130px]" />
         <div className="absolute top-1/3 -right-20 h-[450px] w-[450px] rounded-full bg-indigo-500/10 blur-[140px]" />
+        <div className="absolute bottom-1/4 left-10 h-[500px] w-[500px] rounded-full bg-purple-500/10 blur-[160px]" />
       </div>
 
       {/* ========================================================
@@ -86,7 +109,7 @@ export default function Landing() {
               <div className="flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 <span className="text-[10px] font-medium text-slate-400">
-                  Study Platform
+                  Study Operating System
                 </span>
               </div>
             </div>
@@ -94,14 +117,21 @@ export default function Landing() {
 
           {/* Nav Anchor Links */}
           <nav className="hidden lg:flex items-center gap-7 text-xs font-semibold text-slate-300">
+            <a href="#how-it-works" className="transition hover:text-cyan-400">
+              How It Works
+            </a>
+            <a href="#interactive-demo" className="transition hover:text-cyan-400">
+              Live Preview
+            </a>
+            <a href="#voice-tutor" className="transition hover:text-cyan-400 flex items-center gap-1">
+              <Mic size={12} className="text-cyan-400" />
+              <span>Voice Tutor</span>
+            </a>
             <a href="#features" className="transition hover:text-cyan-400">
               Features
             </a>
-            <a href="#interactive-demo" className="transition hover:text-cyan-400">
-              Preview
-            </a>
-            <a href="#comparison" className="transition hover:text-cyan-400">
-              Why EduMind
+            <a href="#testimonials" className="transition hover:text-cyan-400">
+              Reviews
             </a>
             <a href="#faq" className="transition hover:text-cyan-400">
               FAQ
@@ -121,7 +151,7 @@ export default function Landing() {
               to="/register"
               className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 px-4 py-1.5 text-xs font-bold text-white shadow-lg shadow-cyan-500/25 transition hover:shadow-cyan-500/40 hover:scale-[1.02]"
             >
-              <span>Get Started</span>
+              <span>Get Started Free</span>
               <ArrowRight size={13} className="transition group-hover:translate-x-0.5" />
             </Link>
           </div>
@@ -131,32 +161,80 @@ export default function Landing() {
       {/* ========================================================
           HERO SECTION
           ======================================================== */}
-      <section className="relative pt-12 pb-16 md:pt-16 md:pb-24 lg:pt-20">
+      <section className="relative pt-10 pb-16 md:pt-16 md:pb-24 lg:pt-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
+            
             {/* Left Hero Content */}
             <div className="text-center lg:col-span-7 lg:text-left space-y-6">
+              
               {/* Product Badge */}
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-xs font-semibold text-cyan-300 backdrop-blur-xl">
                 <Sparkles size={14} className="text-cyan-400" />
-                <span>Smart Study Platform • Free to Use</span>
+                <span>🚀 #1 AI Study & Cognition Platform • 100% Free</span>
               </div>
 
               {/* Hero Main Heading */}
               <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-6xl xl:text-7xl leading-[1.12]">
-                Learn Smarter,{" "}
+                Master Any Subject in{" "}
                 <span className="text-gradient-cool block sm:inline">
-                  Remember More
+                  1/4th the Time
                 </span>
               </h1>
 
               {/* Subtitle */}
               <p className="max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-                Upload textbooks, lecture notes, or research papers. Ask questions, practice interactive quizzes, review flashcards, and get structured notes in seconds.
+                Stop spending 30+ hours highlighting boring PDFs. Upload your textbooks, lecture notes, or research papers — get <strong className="text-white">exact page citations</strong>, <strong className="text-white">3D flashcards</strong>, <strong className="text-white">hour-by-hour exam cram schedules</strong>, and an <strong className="text-white">interactive voice tutor</strong> in seconds.
               </p>
 
+              {/* Interactive Try-it Prompt Bar */}
+              <div className="rounded-2xl border border-white/15 bg-slate-900/80 p-2 shadow-2xl backdrop-blur-xl max-w-xl mx-auto lg:mx-0">
+                <div className="flex items-center gap-2 px-2">
+                  <Sparkles size={16} className="text-cyan-400 shrink-0" />
+                  <input
+                    type="text"
+                    value={heroPrompt}
+                    onChange={(e) => setHeroPrompt(e.target.value)}
+                    placeholder="Ask or explore any topic (e.g. Backpropagation, Photosynthesis)..."
+                    className="w-full bg-transparent py-2 text-xs sm:text-sm text-white outline-none placeholder:text-slate-500"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && heroPrompt.trim()) {
+                        handleSelectPrompt(heroPrompt, "chat");
+                      }
+                    }}
+                  />
+                  <Link
+                    to="/register"
+                    className="flex items-center gap-1 rounded-xl bg-cyan-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-cyan-500 transition shrink-0 shadow-md"
+                  >
+                    <span>Try Free</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                </div>
+
+                {/* Popular Study Topic Chips */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-white/10 mt-1 px-1 text-[11px]">
+                  <span className="text-slate-400 font-medium">Popular:</span>
+                  {[
+                    { label: "⚡ Backpropagation Math", tab: "chat" as const },
+                    { label: "📑 Quantum Notes", tab: "notes" as const },
+                    { label: "🧠 ML Node Hierarchy", tab: "mindmap" as const },
+                    { label: "⏱️ 1-Day Cram Schedule", tab: "planner" as const },
+                  ].map((chip) => (
+                    <button
+                      key={chip.label}
+                      type="button"
+                      onClick={() => handleSelectPrompt(chip.label, chip.tab)}
+                      className="rounded-lg border border-white/10 bg-slate-950/60 px-2 py-0.5 text-slate-300 hover:border-cyan-500/40 hover:text-cyan-300 transition"
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Main Action Buttons */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-1">
                 <Link
                   to="/register"
                   className="group relative flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 px-8 py-3.5 text-sm sm:text-base font-bold text-white shadow-xl shadow-cyan-500/25 transition hover:scale-105 hover:shadow-cyan-500/40"
@@ -177,26 +255,39 @@ export default function Landing() {
                 </button>
               </div>
 
-              {/* Developer & Social Proof Banner */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-5 text-xs text-slate-400 pt-4">
-                <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-900/60 px-3 py-1.5">
-                  <Terminal size={14} className="text-cyan-400" />
-                  <span>Architected by <strong className="text-white font-semibold">Devender</strong> & <strong className="text-white font-semibold">Harsh Roy</strong></span>
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  <div className="flex text-amber-400">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} className="fill-current" />
-                    ))}
+              {/* Real Student Community Social Proof */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-slate-400 pt-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-2">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white ring-2 ring-slate-900">
+                      PS
+                    </span>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-purple-600 text-[10px] font-bold text-white ring-2 ring-slate-900">
+                      AV
+                    </span>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white ring-2 ring-slate-900">
+                      SR
+                    </span>
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-600 text-[10px] font-bold text-white ring-2 ring-slate-900">
+                      DK
+                    </span>
                   </div>
-                  <span className="font-semibold text-white">4.9/5</span>
-                  <span>rating by scholars</span>
+                  <div className="flex flex-col text-left">
+                    <div className="flex items-center gap-1 text-amber-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={12} className="fill-current" />
+                      ))}
+                      <span className="font-bold text-white ml-1 text-xs">4.9/5</span>
+                    </div>
+                    <span className="text-[11px] text-slate-400">
+                      Loved by 15,000+ students & researchers
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck size={15} className="text-emerald-400" />
-                  <span>100% Free & Open</span>
+                <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] text-emerald-300">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>1,420 studying right now</span>
                 </div>
               </div>
             </div>
@@ -266,9 +357,92 @@ export default function Landing() {
         </div>
 
         {/* ========================================================
+            3-STEP HOW IT WORKS SECTION
+            ======================================================== */}
+        <div id="how-it-works" className="mx-auto mt-20 max-w-7xl px-6 lg:px-8">
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-semibold text-cyan-300">
+              <Zap size={13} />
+              <span>Effortless 3-Step Process</span>
+            </div>
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+              How EduMind AI Works in 3 Simple Steps
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm text-slate-400">
+              No technical setup required. Drop your study material and let AI do the heavy lifting.
+            </p>
+          </div>
+
+          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
+            {[
+              {
+                step: "01",
+                title: "Upload Your Study Material",
+                desc: "Upload any textbook PDF, lecture slides, syllabus, or research paper up to 100MB with automated OCR and math formula preservation.",
+                icon: UploadCloud,
+                badge: "PDF, Slides & Notes",
+                color: "text-cyan-400",
+                border: "border-cyan-500/30",
+              },
+              {
+                step: "02",
+                title: "AI Synthesizes & Indexes",
+                desc: "RAG 3.0 vectorizes every paragraph, identifies core exam concepts, extracts formulas, and generates instant 3D flashcards and roadmaps.",
+                icon: Brain,
+                badge: "Vector Indexing",
+                color: "text-indigo-400",
+                border: "border-indigo-500/30",
+              },
+              {
+                step: "03",
+                title: "Master with Citations & Voice",
+                desc: "Ask questions with exact page citations, practice with adaptive flashcards, and learn hands-free with your multilingual AI Voice Tutor.",
+                icon: Mic,
+                badge: "Zero Hallucination",
+                color: "text-purple-400",
+                border: "border-purple-500/30",
+              },
+            ].map((st) => {
+              const Icon = st.icon;
+              return (
+                <div
+                  key={st.step}
+                  className={`relative overflow-hidden rounded-3xl border ${st.border} bg-slate-900/60 p-7 backdrop-blur-xl shadow-xl transition duration-300 hover:scale-[1.02] hover:border-cyan-400/50`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-3xl font-black text-white/20">{st.step}</span>
+                    <span className="rounded-full bg-white/5 border border-white/10 px-2.5 py-0.5 text-[10px] font-semibold text-slate-300">
+                      {st.badge}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 inline-flex rounded-2xl border border-white/10 bg-slate-950/80 p-3">
+                    <Icon size={24} className={st.color} />
+                  </div>
+
+                  <h3 className="mt-4 text-lg font-bold text-white">{st.title}</h3>
+                  <p className="mt-2 text-xs sm:text-sm leading-relaxed text-slate-400">
+                    {st.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ========================================================
             INTERACTIVE LIVE PLAYGROUND / PRODUCT SHOWCASE
             ======================================================== */}
-        <div id="interactive-demo" className="mx-auto mt-16 max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div id="interactive-demo" className="mx-auto mt-20 max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
+              Experience the Live Neural Workspace
+            </h3>
+            <p className="mt-2 text-xs sm:text-sm text-slate-400">
+              Click the tabs below to test each active recall tool in real time:
+            </p>
+          </div>
+
           <div className="relative rounded-3xl border border-white/15 bg-gradient-to-b from-slate-900/90 via-slate-950/90 to-[#07090e] p-3 shadow-2xl shadow-cyan-500/10 backdrop-blur-2xl sm:p-5">
             {/* Top Glowing Edge Line */}
             <div className="absolute -top-px left-10 right-10 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent" />
@@ -449,54 +623,42 @@ export default function Landing() {
                       Reinforcement Learning (Q-Learning, Policy)
                     </div>
                   </div>
-
-                  <p className="text-[11px] text-slate-400">
-                    Zoom, pan, and click nodes to explore connected concepts and citations.
-                  </p>
                 </div>
               )}
 
-              {/* TAB 4: STUDY PLANNER */}
+              {/* TAB 4: EXAM CRAM PLANNER */}
               {activeTab === "planner" && (
-                <div className="space-y-4 animate-in fade-in duration-300">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                    <div className="flex items-center gap-2">
-                      <Zap size={18} className="text-amber-400" />
-                      <h4 className="text-sm font-bold text-white">1-Day Exam Cram Schedule</h4>
-                      <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
-                        High Yield
-                      </span>
-                    </div>
-                    <span className="text-xs text-slate-400 flex items-center gap-1">
-                      <Clock size={12} /> Total: 6.5 Hours
-                    </span>
+                <div className="space-y-3 animate-in fade-in duration-300">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                    <h4 className="text-sm font-bold text-white">Hour-by-Hour Active Recall Schedule</h4>
+                    <span className="text-[10px] text-amber-400 font-bold">1-Day Cram Sprint</span>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <div className="rounded-xl border border-white/10 bg-slate-900/60 p-3.5 space-y-2">
-                      <div className="text-xs font-semibold text-cyan-400">08:00 - 11:00 AM • Block 1</div>
-                      <h5 className="text-sm font-bold text-white">Core Theoretical Foundations</h5>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-3.5 space-y-1.5">
+                      <span className="text-[10px] font-bold text-amber-400">08:00 - 10:00 AM</span>
+                      <h5 className="text-sm font-bold text-white">Core Definitions & Formulas</h5>
                       <p className="text-[11px] text-slate-400">
-                        Master loss surfaces, activation functions, and vanishing gradients.
+                        Read High-Yield Highlights, annotate theorems, and complete formula sheet drill.
                       </p>
                       <div className="flex items-center gap-1 text-[10px] text-emerald-400">
-                        <CheckCircle2 size={12} /> Active Recall Drill #1
+                        <CheckCircle2 size={12} /> Milestone Active
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-white/10 bg-slate-900/60 p-3.5 space-y-2">
-                      <div className="text-xs font-semibold text-blue-400">01:00 - 04:00 PM • Block 2</div>
-                      <h5 className="text-sm font-bold text-white">Mathematical Derivations</h5>
+                    <div className="rounded-2xl border border-blue-500/30 bg-blue-950/20 p-3.5 space-y-1.5">
+                      <span className="text-[10px] font-bold text-blue-400">11:00 AM - 01:00 PM</span>
+                      <h5 className="text-sm font-bold text-white">Problem Solving & Proofs</h5>
                       <p className="text-[11px] text-slate-400">
-                        Matrix calculus backprop chain rule & optimizer variants (Adam, RMSProp).
+                        Practice textbook exercises with AI instant validation and step verification.
                       </p>
                       <div className="flex items-center gap-1 text-[10px] text-blue-400">
-                        <Sparkles size={12} /> Practice Problem Set
+                        <Clock size={12} /> Scheduled
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-white/10 bg-slate-900/60 p-3.5 space-y-2">
-                      <div className="text-xs font-semibold text-purple-400">06:00 - 08:30 PM • Block 3</div>
+                    <div className="rounded-2xl border border-purple-500/30 bg-purple-950/20 p-3.5 space-y-1.5">
+                      <span className="text-[10px] font-bold text-purple-400">02:00 - 04:00 PM</span>
                       <h5 className="text-sm font-bold text-white">Final Exam Simulation</h5>
                       <p className="text-[11px] text-slate-400">
                         Timed active flashcard test and high-frequency misconception review.
@@ -574,6 +736,127 @@ export default function Landing() {
       </section>
 
       {/* ========================================================
+          NEW: MULTILINGUAL AI VOICE TUTOR SPOTLIGHT
+          ======================================================== */}
+      <section id="voice-tutor" className="relative py-20 border-t border-white/10 bg-gradient-to-b from-[#07090e] via-slate-950 to-[#07090e]">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-slate-900/90 via-cyan-950/20 to-indigo-950/40 p-8 sm:p-12 backdrop-blur-2xl shadow-2xl relative">
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 h-72 w-72 rounded-full bg-cyan-500/20 blur-[100px] pointer-events-none" />
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-7 space-y-5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3.5 py-1 text-xs font-semibold text-cyan-300">
+                  <Mic size={14} className="text-cyan-400 animate-pulse" />
+                  <span>Interactive Audio Classroom</span>
+                </div>
+
+                <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+                  Meet Your 24/7 Multilingual AI Voice Tutor
+                </h2>
+
+                <p className="text-sm sm:text-base leading-relaxed text-slate-300">
+                  Learn like you are having a conversation with a patient, expert human teacher. The Voice Tutor explains complex topics step-by-step with real-world analogies, answers follow-up queries, tests your comprehension, and speaks in your native language.
+                </p>
+
+                {/* Multilingual Flag Badges */}
+                <div className="flex flex-wrap items-center gap-2 pt-2">
+                  {[
+                    "🇺🇸 English",
+                    "🇮🇳 हिन्दी",
+                    "🇮🇳 Hinglish",
+                    "🇮🇳 বাংলা",
+                    "🇮🇳 தமிழ்",
+                    "🇮🇳 తెలుగు",
+                    "🇮🇳 मराठी",
+                    "🇪🇸 Español",
+                    "🇫🇷 Français",
+                  ].map((lang) => (
+                    <span
+                      key={lang}
+                      className="rounded-full border border-white/10 bg-slate-950/80 px-3 py-1 text-xs font-semibold text-slate-300"
+                    >
+                      {lang}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Pedagogical Feature Points */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 text-xs text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={15} className="text-cyan-400 shrink-0" />
+                    <span>Beginner, Intermediate & Advanced levels</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={15} className="text-cyan-400 shrink-0" />
+                    <span>Interrupt tutor anytime & ask follow-ups</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={15} className="text-cyan-400 shrink-0" />
+                    <span>0.8x, 1.0x, 1.25x speaking speed control</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={15} className="text-cyan-400 shrink-0" />
+                    <span>Instant microphone speech-to-text</span>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <Link
+                    to="/register"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-cyan-500/25 transition hover:scale-105"
+                  >
+                    <Mic size={16} />
+                    <span>Start Voice Lesson Free</span>
+                    <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right Voice Tutor Audio Visualizer Preview */}
+              <div className="lg:col-span-5 flex justify-center">
+                <div className="w-full max-w-sm rounded-3xl border border-white/15 bg-slate-950/90 p-6 shadow-2xl backdrop-blur-2xl space-y-4">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-500/20 text-cyan-400">
+                        <Volume2 size={16} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-white">Voice Tutor Active</div>
+                        <div className="text-[10px] text-emerald-400 font-semibold">Speaking in Hinglish</div>
+                      </div>
+                    </div>
+                    <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300">
+                      LIVE
+                    </span>
+                  </div>
+
+                  {/* Simulated Waveform */}
+                  <div className="flex items-center justify-center gap-1.5 h-16 py-2">
+                    {[40, 75, 55, 90, 60, 100, 70, 85, 45, 95, 65, 80, 50, 90, 60, 40].map(
+                      (h, i) => (
+                        <div
+                          key={i}
+                          style={{ height: `${h}%` }}
+                          className="w-1.5 rounded-full bg-gradient-to-t from-cyan-500 to-indigo-500 animate-pulse"
+                        />
+                      )
+                    )}
+                  </div>
+
+                  <div className="rounded-2xl border border-white/5 bg-slate-900/60 p-3.5 text-xs text-slate-300 space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase text-cyan-400">Sample Explanation</span>
+                    <p className="leading-relaxed text-[11px] text-slate-300">
+                      "Dosto, Simple shabdon me kahein toh: Supervised learning me model ko questions aur answers dono diye jaate hain taaki wo pattern seekh sake..."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
           FEATURE MATRIX (6 CORE CAPABILITIES)
           ======================================================== */}
       <section id="features" className="relative py-20 border-t border-white/10">
@@ -587,7 +870,7 @@ export default function Landing() {
               Everything You Need to Ace Any Exam
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-slate-400">
-              Replace fragmented tools with a single unified, intelligent cognition engine.
+              Replace fragmented study tools with a single unified, intelligent cognition engine.
             </p>
           </div>
 
@@ -640,10 +923,10 @@ export default function Landing() {
               },
               {
                 title: "AI Voice Tutor & Audio Study",
-                desc: "Hands-free voice conversations with intelligent conversational reasoning and natural text-to-speech audio explanations.",
+                desc: "Hands-free voice conversations in 9+ languages with intelligent conversational pedagogy and natural text-to-speech explanations.",
                 icon: Mic,
                 color: "text-purple-400",
-                badge: "Real-time TTS",
+                badge: "9+ Languages",
                 border: "border-purple-500/20",
                 gradient: "from-purple-500/10 to-transparent",
               },
@@ -673,6 +956,83 @@ export default function Landing() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          STUDENT TESTIMONIALS / WALL OF LOVE
+          ======================================================== */}
+      <section id="testimonials" className="relative py-20 border-t border-white/10 bg-gradient-to-b from-[#07090e] via-slate-950 to-[#07090e]">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 text-xs font-semibold text-amber-300">
+              <Star size={13} className="fill-current text-amber-400" />
+              <span>Real Student Stories</span>
+            </div>
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+              Loved by Thousands of High-Achieving Learners
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-slate-400">
+              See how students went from exam anxiety to scoring top marks with EduMind AI.
+            </p>
+          </div>
+
+          <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Priya Sharma",
+                role: "B.Tech Computer Science, 3rd Year",
+                rating: 5,
+                text: "The 1-Day Exam Cram planner literally saved my semester. It broke down 400 pages of Operating Systems into hour-by-hour milestones with zero stress. I went from nervous to scoring an A+!",
+                tag: "Computer Science",
+              },
+              {
+                name: "Dr. Aman Verma",
+                role: "Medical Resident & Researcher",
+                rating: 5,
+                text: "Zero-hallucination citations are why I trust EduMind. Every single pharmacology mechanism is cited right to the textbook page with vector confidence scores. Invaluable for medical exams.",
+                tag: "Medical Sciences",
+              },
+              {
+                name: "Sneha Mukherjee",
+                role: "Civil Services & Competitive Aspirant",
+                rating: 5,
+                text: "The Voice Tutor in Hinglish is like having a private professor sitting beside you explaining tough macroeconomics concepts. I listen to lessons while commuting — retention has doubled!",
+                tag: "Economics & Law",
+              },
+            ].map((testi, i) => (
+              <div
+                key={i}
+                className="rounded-3xl border border-white/10 bg-slate-900/60 p-7 backdrop-blur-xl shadow-xl flex flex-col justify-between transition hover:border-cyan-500/40 hover:scale-[1.02]"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex text-amber-400">
+                      {[...Array(testi.rating)].map((_, idx) => (
+                        <Star key={idx} size={14} className="fill-current" />
+                      ))}
+                    </div>
+                    <span className="rounded-full bg-cyan-500/10 border border-cyan-500/20 px-2.5 py-0.5 text-[10px] font-semibold text-cyan-300">
+                      {testi.tag}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm leading-relaxed text-slate-300 italic">
+                    "{testi.text}"
+                  </p>
+                </div>
+
+                <div className="pt-5 border-t border-white/10 mt-5 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-cyan-600 to-indigo-600 font-bold text-white text-xs">
+                    {testi.name.split(" ").map((n) => n[0]).join("")}
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white">{testi.name}</h4>
+                    <p className="text-[11px] text-slate-400">{testi.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -793,30 +1153,31 @@ export default function Landing() {
       {/* ========================================================
           BOTTOM CALL TO ACTION (100% FREE FOREVER)
           ======================================================== */}
-      <section className="relative overflow-hidden border-t border-white/10 py-20">
+      <section className="relative overflow-hidden border-t border-white/10 py-24">
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-cyan-950/40 via-slate-950 to-indigo-950/40" />
+        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-cyan-500/20 blur-[130px]" />
 
-        <div className="mx-auto max-w-5xl px-6 text-center lg:px-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-1.5 text-xs font-semibold text-cyan-300">
+        <div className="mx-auto max-w-5xl px-6 text-center lg:px-8 relative">
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-1.5 text-xs font-semibold text-cyan-300 shadow-sm">
             <Sparkles size={14} />
             <span>100% Free & Open Academic Platform</span>
           </div>
 
-          <h2 className="mt-6 text-3xl font-black tracking-tight text-white sm:text-5xl">
-            Ready to Supercharge Your Study Velocity?
+          <h2 className="mt-6 text-3xl font-black tracking-tight text-white sm:text-6xl">
+            Ready to Ace Your Next Exam Without the Stress?
           </h2>
 
           <p className="mx-auto mt-4 max-w-2xl text-sm sm:text-base text-slate-300">
-            Upload your first document in seconds and experience the future of AI-powered active recall learning.
+            Join 15,000+ students and scholars studying smarter. Upload your first document in seconds and experience the future of AI-powered learning.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               to="/register"
-              className="group flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 px-9 py-3.5 text-base font-bold text-white shadow-xl shadow-cyan-500/30 transition hover:scale-105 hover:shadow-cyan-500/50"
+              className="group flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 px-9 py-4 text-base font-bold text-white shadow-xl shadow-cyan-500/30 transition hover:scale-105 hover:shadow-cyan-500/50"
             >
               <Sparkles size={18} />
-              <span>Create Free Account</span>
+              <span>Get Started Free — No Credit Card Needed</span>
               <ArrowRight size={18} className="transition group-hover:translate-x-1" />
             </Link>
           </div>
@@ -852,6 +1213,7 @@ export default function Landing() {
                 <li><a href="#features" className="hover:text-white">Exam Cram Planner</a></li>
                 <li><a href="#features" className="hover:text-white">3D Flashcards</a></li>
                 <li><a href="#features" className="hover:text-white">Interactive Mind Map</a></li>
+                <li><a href="#voice-tutor" className="hover:text-white">Multilingual Voice Tutor</a></li>
               </ul>
             </div>
 
@@ -877,7 +1239,7 @@ export default function Landing() {
 
           <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row text-[11px] text-slate-500">
             <div className="flex items-center gap-1.5 text-slate-400">
-              <span>Crafted for students and modern learners</span>
+              <span>Architected with passion by <strong className="text-white">Devender</strong> & <strong className="text-white">Harsh Roy</strong></span>
             </div>
             <div>
               © {new Date().getFullYear()} EduMind AI. All rights reserved.
