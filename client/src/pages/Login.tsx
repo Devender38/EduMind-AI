@@ -15,13 +15,17 @@ import {
   ArrowLeft,
   CheckCircle2,
   KeyRound,
+  Sun,
+  Moon,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../store/authStore";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Login() {
   const navigate = useNavigate();
   const login = useAuthStore((s) => s.login);
+  const { isDark, toggleTheme } = useTheme();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -72,14 +76,30 @@ export default function Login() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#050b14] px-4 py-12 selection:bg-cyan-500 selection:text-white">
+    <div
+      className={`relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12 transition-colors duration-300 selection:bg-cyan-500 selection:text-white ${
+        isDark ? "bg-[#050b14] text-slate-100" : "bg-[#f8fafc] text-slate-900"
+      }`}
+    >
       
       {/* =============================
           Ambient Mesh Aurora Background
           ============================= */}
-      <div className="pointer-events-none absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-gradient-to-tr from-blue-600/30 to-cyan-500/20 blur-[150px] animate-pulse" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-gradient-to-tr from-purple-600/30 to-indigo-600/25 blur-[150px] animate-pulse" />
-      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-cyan-600/10 blur-[180px]" />
+      <div
+        className={`pointer-events-none absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-gradient-to-tr from-blue-600/30 to-cyan-500/20 blur-[150px] animate-pulse transition-opacity duration-300 ${
+          isDark ? "opacity-100" : "opacity-35"
+        }`}
+      />
+      <div
+        className={`pointer-events-none absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-gradient-to-tr from-purple-600/30 to-indigo-600/25 blur-[150px] animate-pulse transition-opacity duration-300 ${
+          isDark ? "opacity-100" : "opacity-35"
+        }`}
+      />
+      <div
+        className={`pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-cyan-600/10 blur-[180px] transition-opacity duration-300 ${
+          isDark ? "opacity-100" : "opacity-30"
+        }`}
+      />
 
       {/* Subtle Futuristic Radial Dots Pattern */}
       <div
@@ -93,11 +113,39 @@ export default function Login() {
       {/* Back to Home Link */}
       <Link
         to="/"
-        className="absolute top-6 left-6 z-20 flex items-center gap-2 rounded-xl border border-white/10 bg-slate-900/60 px-3.5 py-2 text-xs font-semibold text-slate-300 backdrop-blur-md transition hover:border-cyan-500/40 hover:bg-slate-800 hover:text-white shadow-lg"
+        className={`absolute top-6 left-6 z-20 flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-semibold backdrop-blur-md transition shadow-lg ${
+          isDark
+            ? "border-white/10 bg-slate-900/60 text-slate-300 hover:border-cyan-500/40 hover:bg-slate-800 hover:text-white"
+            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 shadow-sm"
+        }`}
       >
         <ArrowLeft size={14} className="text-cyan-400" />
         <span>Back to Home</span>
       </Link>
+
+      {/* Day / Night Theme Toggle */}
+      <button
+        type="button"
+        onClick={toggleTheme}
+        title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        className={`absolute top-6 right-6 z-20 flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold transition shadow-lg ${
+          isDark
+            ? "border-amber-400/30 bg-amber-400/10 text-amber-300 hover:bg-amber-400/20"
+            : "border-indigo-200 bg-white text-indigo-700 hover:bg-indigo-50 shadow-sm"
+        }`}
+      >
+        {isDark ? (
+          <>
+            <Sun size={14} className="text-amber-400 animate-spin-slow" />
+            <span className="hidden sm:inline">Light Mode</span>
+          </>
+        ) : (
+          <>
+            <Moon size={14} className="text-indigo-600" />
+            <span className="hidden sm:inline">Dark Mode</span>
+          </>
+        )}
+      </button>
 
       {/* =============================
           Glassmorphic Login Card

@@ -196,12 +196,8 @@ export default function Landing() {
             <button
               type="button"
               onClick={toggleTheme}
-              title={
-                isDark
-                  ? "Day Mode (Light) par switch karein"
-                  : "Night Mode (Dark) par switch karein"
-              }
-              aria-label={isDark ? "Switch to Day Mode" : "Switch to Night Mode"}
+              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
               className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all duration-200 shadow-sm ${
                 isDark
                   ? "border-amber-400/30 bg-amber-400/10 text-amber-300 hover:border-amber-400/60 hover:bg-amber-400/20"
@@ -210,13 +206,13 @@ export default function Landing() {
             >
               {isDark ? (
                 <>
-                  <Sun size={15} className="text-amber-400 animate-pulse" />
-                  <span className="text-[11px]">☀️ Day</span>
+                  <Sun size={15} className="text-amber-400 animate-spin-slow" />
+                  <span className="text-[11px]">Light Mode</span>
                 </>
               ) : (
                 <>
                   <Moon size={15} className="text-indigo-600" />
-                  <span className="text-[11px]">🌙 Night</span>
+                  <span className="text-[11px]">Dark Mode</span>
                 </>
               )}
             </button>

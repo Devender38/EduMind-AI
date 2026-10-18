@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Search, LogOut, Sparkles, Download, Command, Menu, MessageSquareHeart } from "lucide-react";
+import { Search, LogOut, Sparkles, Download, Command, Menu, MessageSquareHeart, Sun, Moon } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import CommandPalette from "./CommandPalette";
 import ExportCenterModal from "./ExportCenterModal";
 import FeedbackModal from "../feedback/FeedbackModal";
 import { useAuthStore } from "../../store/authStore";
+import { useTheme } from "../../context/ThemeContext";
 
 interface Props {
   selectedDocument?: any;
@@ -16,6 +17,7 @@ function Topbar({ selectedDocument, onMenuClick }: Props) {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const navigate = useNavigate();
+  const { isDark, toggleTheme } = useTheme();
 
   const { user, logout } = useAuthStore();
 
@@ -66,6 +68,31 @@ function Topbar({ selectedDocument, onMenuClick }: Props) {
 
         {/* Right Side Status & User Info */}
         <div className="flex items-center gap-1.5 sm:gap-3">
+          {/* Day / Night Theme Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            className={`flex items-center gap-1.5 rounded-xl border p-2 sm:px-3 sm:py-2 text-xs font-bold transition-all shadow-sm active:scale-95 ${
+              isDark
+                ? "border-amber-400/30 bg-amber-400/10 text-amber-300 hover:border-amber-400/60 hover:bg-amber-400/20"
+                : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:border-indigo-400 hover:bg-indigo-100/80"
+            }`}
+          >
+            {isDark ? (
+              <>
+                <Sun size={14} className="text-amber-400 animate-spin-slow" />
+                <span className="hidden md:inline">Light Mode</span>
+              </>
+            ) : (
+              <>
+                <Moon size={14} className="text-indigo-600" />
+                <span className="hidden md:inline">Dark Mode</span>
+              </>
+            )}
+          </button>
+
           {/* Feedback & Review Trigger */}
           <button
             onClick={() => setIsFeedbackOpen(true)}

@@ -17,7 +17,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (saved === "light" || saved === "dark") {
       return saved;
     }
-    return "dark"; // Default to dark for high-tech aesthetic
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: light)").matches
+    ) {
+      return "light";
+    }
+    return "dark"; // Default dark theme
   });
 
   useEffect(() => {
