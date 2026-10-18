@@ -13,6 +13,11 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
+  Sparkles,
+  ArrowLeft,
+  ShieldCheck,
+  Check,
+  X as XIcon,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../store/authStore";
@@ -29,11 +34,18 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
   const [legalModalTab, setLegalModalTab] = useState<LegalTab>("terms");
+
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const passwordsMatch =
+    confirmPassword.length > 0 && password === confirmPassword;
+  const passwordsMismatch =
+    confirmPassword.length > 0 && password !== confirmPassword;
 
   const handleOpenTerms = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -52,20 +64,47 @@ export default function Register() {
   // Real-time password strength calculation
   const strength = useMemo(() => {
     let score = 0;
-    if (!password) return { score: 0, label: "None", color: "bg-slate-700", text: "text-slate-500" };
+    if (!password)
+      return {
+        score: 0,
+        label: "None",
+        color: "bg-slate-700",
+        text: "text-slate-500",
+      };
 
-    if (password.length >= 6) score += 1;
-    if (password.length >= 10) score += 1;
+    if (password.length >= 8) score += 1;
+    if (password.length >= 12) score += 1;
     if (/[A-Z]/.test(password)) score += 1;
     if (/[0-9]/.test(password)) score += 1;
     if (/[^A-Za-z0-9]/.test(password)) score += 1;
 
-    if (score <= 1) return { score: 20, label: "Weak", color: "bg-red-500", text: "text-red-400" };
+    if (score <= 1)
+      return {
+        score: 20,
+        label: "Weak",
+        color: "bg-rose-500",
+        text: "text-rose-400",
+      };
     if (score === 2 || score === 3)
-      return { score: 60, label: "Fair", color: "bg-amber-500", text: "text-amber-400" };
+      return {
+        score: 60,
+        label: "Fair",
+        color: "bg-amber-500",
+        text: "text-amber-400",
+      };
     if (score === 4)
-      return { score: 85, label: "Good", color: "bg-blue-500", text: "text-blue-400" };
-    return { score: 100, label: "Strong", color: "bg-emerald-500", text: "text-emerald-400" };
+      return {
+        score: 85,
+        label: "Good",
+        color: "bg-blue-500",
+        text: "text-blue-400",
+      };
+    return {
+      score: 100,
+      label: "Strong",
+      color: "bg-emerald-500",
+      text: "text-emerald-400",
+    };
   }, [password]);
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -82,8 +121,14 @@ export default function Register() {
       return;
     }
 
-    if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
-      toast.error("Password must contain letters, numbers, and a special character.");
+    if (
+      !/[A-Za-z]/.test(password) ||
+      !/[0-9]/.test(password) ||
+      !/[^A-Za-z0-9]/.test(password)
+    ) {
+      toast.error(
+        "Password must contain letters, numbers, and a special character."
+      );
       return;
     }
 
@@ -118,48 +163,64 @@ export default function Register() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#08111F] px-4 py-12 selection:bg-cyan-500 selection:text-white">
-      {/* Background Glows */}
-      <div className="absolute -left-20 -top-20 h-96 w-96 rounded-full bg-blue-600/20 blur-[140px] pointer-events-none" />
-      <div className="absolute -bottom-20 -right-20 h-96 w-96 rounded-full bg-purple-600/20 blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-cyan-600/10 blur-[160px] pointer-events-none" />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#050b14] px-4 py-12 selection:bg-cyan-500 selection:text-white">
+      {/* =============================
+          Ambient Mesh Aurora Background
+          ============================= */}
+      <div className="pointer-events-none absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-gradient-to-tr from-blue-600/30 to-cyan-500/20 blur-[150px] animate-pulse" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-gradient-to-tr from-purple-600/30 to-indigo-600/25 blur-[150px] animate-pulse" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-cyan-600/10 blur-[180px]" />
 
-      {/* Grid Overlay */}
+      {/* Subtle Futuristic Radial Dots Pattern */}
       <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        className="pointer-events-none absolute inset-0 opacity-[0.04]"
         style={{
-          backgroundImage: `radial-gradient(#38bdf8 1px, transparent 1px)`,
-          backgroundSize: "24px 24px",
+          backgroundImage: `radial-gradient(#38bdf8 1.2px, transparent 1.2px)`,
+          backgroundSize: "28px 28px",
         }}
       />
 
-      {/* Success Registration Modal */}
+      {/* Back to Home Link */}
+      <Link
+        to="/"
+        className="absolute top-6 left-6 z-20 flex items-center gap-2 rounded-xl border border-white/10 bg-slate-900/60 px-3.5 py-2 text-xs font-semibold text-slate-300 backdrop-blur-md transition hover:border-cyan-500/40 hover:bg-slate-800 hover:text-white shadow-lg"
+      >
+        <ArrowLeft size={14} className="text-cyan-400" />
+        <span>Back to Home</span>
+      </Link>
+
+      {/* =============================
+          Success Modal
+          ============================= */}
       <AnimatePresence>
         {isSuccessModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 px-4 backdrop-blur-md">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="w-full max-w-md rounded-3xl border border-white/10 bg-[#0B1528] p-8 text-center shadow-2xl"
+              className="w-full max-w-md rounded-[2rem] border border-white/10 bg-slate-950/90 p-8 text-center shadow-2xl backdrop-blur-2xl ring-1 ring-white/10"
             >
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/40">
                 <CheckCircle2 size={36} />
               </div>
-              <h2 className="text-2xl font-bold text-white">Account Created!</h2>
+              <h2 className="text-2xl font-extrabold text-white">
+                Account Created!
+              </h2>
               <p className="mt-2 text-sm text-slate-300">
-                We've sent a verification email to{" "}
+                Welcome to EduMind AI. Your account is active for{" "}
                 <strong className="text-cyan-400">{email}</strong>.
               </p>
               <p className="mt-1 text-xs text-slate-400">
-                You can now start learning or verify your email at your convenience.
+                You can now start learning, upload study notes, and chat with AI.
               </p>
               <div className="mt-6 flex flex-col gap-3">
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:opacity-95"
+                  className="flex items-center justify-center gap-2 w-full rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-600/30 transition hover:brightness-110 active:scale-95"
                 >
-                  Continue to Dashboard
+                  <span>Continue to Dashboard</span>
+                  <ArrowRight size={16} />
                 </button>
               </div>
             </motion.div>
@@ -167,77 +228,101 @@ export default function Register() {
         )}
       </AnimatePresence>
 
-      {/* Register Form Card */}
+      {/* =============================
+          Glassmorphic Register Card
+          ============================= */}
       <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.96 }}
+        initial={{ opacity: 0, y: 22, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-lg rounded-3xl border border-white/10 bg-[#0B1528]/80 p-8 shadow-2xl backdrop-blur-2xl"
+        className="relative z-10 w-full max-w-xl overflow-hidden rounded-[2.25rem] border border-white/10 bg-slate-950/70 p-7 sm:p-9 shadow-[0_0_60px_-15px_rgba(59,130,246,0.25)] backdrop-blur-2xl ring-1 ring-white/5"
       >
+        {/* Top Decorative Ambient Glow Bar */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-500" />
+
         {/* Brand Header */}
         <div className="mb-6 flex flex-col items-center text-center">
+          {/* Logo Badge with Aura Ring */}
           <Link
             to="/"
-            className="group mb-4 flex items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-purple-600 p-3.5 shadow-lg shadow-blue-500/25 transition-transform duration-300 group-hover:scale-105"
+            title="EduMind AI Home"
+            className="group relative mb-4 flex items-center justify-center"
           >
-            <BrainCircuit size={32} className="text-white" />
+            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-600 opacity-60 blur-md transition duration-500 group-hover:opacity-100 group-hover:blur-lg" />
+            <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 shadow-xl shadow-indigo-600/30 ring-1 ring-white/20 transition-transform duration-300 group-hover:scale-105">
+              <BrainCircuit size={28} className="text-white drop-shadow" />
+            </div>
           </Link>
 
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          {/* Micro AI Badge */}
+          <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-0.5 text-[11px] font-semibold text-cyan-300 shadow-sm">
+            <Sparkles size={11} className="text-cyan-400 animate-spin" />
+            <span>Join 10,000+ Smart Students</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             Create Your Account
           </h1>
-          <p className="mt-1.5 text-sm text-slate-400">
-            Supercharge your cognitive learning with AI
+          <p className="mt-1.5 text-xs sm:text-sm text-slate-400 max-w-sm">
+            Supercharge your cognitive learning with AI-powered study workflows
           </p>
         </div>
 
-        {/* Error Alert */}
+        {/* Error Alert Box */}
         <AnimatePresence>
           {errorMessage && (
             <motion.div
               initial={{ opacity: 0, height: 0, marginBottom: 0 }}
               animate={{ opacity: 1, height: "auto", marginBottom: 16 }}
               exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-              className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-sm text-red-300"
+              className="flex items-start gap-2.5 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-xs text-rose-300 shadow-sm"
             >
-              <AlertCircle size={18} className="mt-0.5 shrink-0 text-red-400" />
-              <span>{errorMessage}</span>
+              <AlertCircle size={16} className="mt-0.5 shrink-0 text-rose-400" />
+              <span className="leading-relaxed">{errorMessage}</span>
             </motion.div>
           )}
         </AnimatePresence>
 
+        {/* Form */}
         <form onSubmit={handleRegister} className="space-y-4">
+          
           {/* Row 1: Full Name & Username */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                Full Name <span className="text-red-400">*</span>
+                Full Name <span className="text-cyan-400">*</span>
               </label>
-              <div className="group flex items-center rounded-xl border border-slate-700/80 bg-slate-900/80 px-3.5 transition focus-within:border-cyan-500 focus-within:ring-2 focus-within:ring-cyan-500/20">
-                <UserIcon size={17} className="text-slate-400 group-focus-within:text-cyan-400" />
+              <div className="group relative flex items-center rounded-2xl border border-slate-700/80 bg-slate-900/70 px-3.5 transition-all duration-200 focus-within:border-cyan-400 focus-within:bg-slate-900/90 focus-within:shadow-[0_0_20px_rgba(6,182,212,0.18)]">
+                <UserIcon
+                  size={17}
+                  className="text-slate-400 transition-colors group-focus-within:text-cyan-400"
+                />
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Devender"
-                  className="w-full bg-transparent p-3 text-sm text-white outline-none placeholder:text-slate-500"
+                  className="w-full bg-transparent px-3 py-3 text-xs sm:text-sm text-white outline-none placeholder:text-slate-500"
                 />
               </div>
             </div>
 
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                Username <span className="text-slate-500">(Optional)</span>
+                Username <span className="text-slate-500 text-[10px]">(Optional)</span>
               </label>
-              <div className="group flex items-center rounded-xl border border-slate-700/80 bg-slate-900/80 px-3.5 transition focus-within:border-cyan-500 focus-within:ring-2 focus-within:ring-cyan-500/20">
-                <AtSign size={17} className="text-slate-400 group-focus-within:text-cyan-400" />
+              <div className="group relative flex items-center rounded-2xl border border-slate-700/80 bg-slate-900/70 px-3.5 transition-all duration-200 focus-within:border-cyan-400 focus-within:bg-slate-900/90 focus-within:shadow-[0_0_20px_rgba(6,182,212,0.18)]">
+                <AtSign
+                  size={17}
+                  className="text-slate-400 transition-colors group-focus-within:text-cyan-400"
+                />
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="devender_ai"
-                  className="w-full bg-transparent p-3 text-sm text-white outline-none placeholder:text-slate-500"
+                  className="w-full bg-transparent px-3 py-3 text-xs sm:text-sm text-white outline-none placeholder:text-slate-500"
                 />
               </div>
             </div>
@@ -245,43 +330,57 @@ export default function Register() {
 
           {/* Email Address */}
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-300">
-              Email Address <span className="text-red-400">*</span>
+            <label className="mb-1.5 flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-300">
+              <span>
+                Email Address <span className="text-cyan-400">*</span>
+              </span>
+              {isEmailValid && (
+                <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-400 lowercase">
+                  <CheckCircle2 size={12} /> valid
+                </span>
+              )}
             </label>
-            <div className="group flex items-center rounded-xl border border-slate-700/80 bg-slate-900/80 px-3.5 transition focus-within:border-cyan-500 focus-within:ring-2 focus-within:ring-cyan-500/20">
-              <Mail size={17} className="text-slate-400 group-focus-within:text-cyan-400" />
+            <div className="group relative flex items-center rounded-2xl border border-slate-700/80 bg-slate-900/70 px-3.5 transition-all duration-200 focus-within:border-cyan-400 focus-within:bg-slate-900/90 focus-within:shadow-[0_0_20px_rgba(6,182,212,0.18)]">
+              <Mail
+                size={17}
+                className="text-slate-400 transition-colors group-focus-within:text-cyan-400"
+              />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="student@example.com"
-                className="w-full bg-transparent p-3 text-sm text-white outline-none placeholder:text-slate-500"
+                placeholder="you@example.com"
+                className="w-full bg-transparent px-3 py-3 text-xs sm:text-sm text-white outline-none placeholder:text-slate-500"
               />
             </div>
           </div>
 
-          {/* Password & Confirm Password */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Password & Confirm Password Row */}
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                Password <span className="text-red-400">*</span>
+                Password <span className="text-cyan-400">*</span>
               </label>
-              <div className="group flex items-center rounded-xl border border-slate-700/80 bg-slate-900/80 px-3.5 transition focus-within:border-cyan-500 focus-within:ring-2 focus-within:ring-cyan-500/20">
-                <Lock size={17} className="text-slate-400 group-focus-within:text-cyan-400" />
+              <div className="group relative flex items-center rounded-2xl border border-slate-700/80 bg-slate-900/70 px-3.5 transition-all duration-200 focus-within:border-cyan-400 focus-within:bg-slate-900/90 focus-within:shadow-[0_0_20px_rgba(6,182,212,0.18)]">
+                <Lock
+                  size={17}
+                  className="text-slate-400 transition-colors group-focus-within:text-cyan-400"
+                />
                 <input
                   type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-transparent p-3 text-sm text-white outline-none placeholder:text-slate-500"
+                  className="w-full bg-transparent px-3 py-3 text-xs sm:text-sm text-white outline-none placeholder:text-slate-500"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-slate-400 transition hover:text-slate-200"
+                  className="text-slate-400 transition hover:text-slate-200 p-1 focus:outline-none"
                   tabIndex={-1}
+                  title={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -289,29 +388,69 @@ export default function Register() {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-300">
-                Confirm Password <span className="text-red-400">*</span>
-              </label>
-              <div className="group flex items-center rounded-xl border border-slate-700/80 bg-slate-900/80 px-3.5 transition focus-within:border-cyan-500 focus-within:ring-2 focus-within:ring-cyan-500/20">
-                <Lock size={17} className="text-slate-400 group-focus-within:text-cyan-400" />
+              <div className="mb-1.5 flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+                  Confirm Password <span className="text-cyan-400">*</span>
+                </label>
+                {passwordsMatch && (
+                  <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-400">
+                    <Check size={12} /> Match
+                  </span>
+                )}
+                {passwordsMismatch && (
+                  <span className="flex items-center gap-1 text-[11px] font-medium text-rose-400">
+                    <XIcon size={12} /> Differ
+                  </span>
+                )}
+              </div>
+              <div
+                className={`group relative flex items-center rounded-2xl border bg-slate-900/70 px-3.5 transition-all duration-200 focus-within:bg-slate-900/90 ${
+                  passwordsMatch
+                    ? "border-emerald-500/50 focus-within:border-emerald-400 focus-within:shadow-[0_0_20px_rgba(16,185,129,0.18)]"
+                    : passwordsMismatch
+                    ? "border-rose-500/50 focus-within:border-rose-400"
+                    : "border-slate-700/80 focus-within:border-cyan-400 focus-within:shadow-[0_0_20px_rgba(6,182,212,0.18)]"
+                }`}
+              >
+                <Lock
+                  size={17}
+                  className={`transition-colors ${
+                    passwordsMatch
+                      ? "text-emerald-400"
+                      : passwordsMismatch
+                      ? "text-rose-400"
+                      : "text-slate-400 group-focus-within:text-cyan-400"
+                  }`}
+                />
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showConfirmPassword ? "text" : "password"}
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-transparent p-3 text-sm text-white outline-none placeholder:text-slate-500"
+                  className="w-full bg-transparent px-3 py-3 text-xs sm:text-sm text-white outline-none placeholder:text-slate-500"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="text-slate-400 transition hover:text-slate-200 p-1 focus:outline-none"
+                  tabIndex={-1}
+                  title={showConfirmPassword ? "Hide password" : "Show password"}
+                >
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
             </div>
           </div>
 
           {/* Password Strength Meter */}
           {password && (
-            <div className="space-y-1.5 rounded-xl border border-slate-800 bg-slate-900/40 p-3">
+            <div className="space-y-1.5 rounded-2xl border border-slate-800/80 bg-slate-900/50 p-3.5 backdrop-blur-sm">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-400">Password Strength:</span>
-                <span className={`font-semibold ${strength.text}`}>{strength.label}</span>
+                <span className={`font-bold ${strength.text}`}>
+                  {strength.label}
+                </span>
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
                 <motion.div
@@ -322,39 +461,63 @@ export default function Register() {
                 />
               </div>
               <div className="grid grid-cols-2 gap-1 pt-1 text-[11px] text-slate-400">
-                <span className={password.length >= 6 ? "text-emerald-400" : ""}>
-                  • Min 6 characters
+                <span
+                  className={
+                    password.length >= 8
+                      ? "text-emerald-400 font-medium"
+                      : "text-slate-500"
+                  }
+                >
+                  • Min 8 characters
                 </span>
-                <span className={/[A-Z]/.test(password) ? "text-emerald-400" : ""}>
+                <span
+                  className={
+                    /[A-Z]/.test(password)
+                      ? "text-emerald-400 font-medium"
+                      : "text-slate-500"
+                  }
+                >
                   • Uppercase letter
                 </span>
-                <span className={/[0-9]/.test(password) ? "text-emerald-400" : ""}>
+                <span
+                  className={
+                    /[0-9]/.test(password)
+                      ? "text-emerald-400 font-medium"
+                      : "text-slate-500"
+                  }
+                >
                   • Number (0-9)
                 </span>
-                <span className={/[^A-Za-z0-9]/.test(password) ? "text-emerald-400" : ""}>
-                  • Special character (!@#$)
+                <span
+                  className={
+                    /[^A-Za-z0-9]/.test(password)
+                      ? "text-emerald-400 font-medium"
+                      : "text-slate-500"
+                  }
+                >
+                  • Special symbol (!@#$)
                 </span>
               </div>
             </div>
           )}
 
-          {/* Terms & Conditions Checkbox */}
+          {/* Terms & Privacy Checkbox */}
           <div className="flex items-start gap-2.5 pt-1">
             <input
               type="checkbox"
               id="terms"
               checked={termsAccepted}
               onChange={(e) => setTermsAccepted(e.target.checked)}
-              className="mt-1 h-4 w-4 rounded border-slate-700 bg-slate-900 text-cyan-500 accent-cyan-500 focus:ring-0 cursor-pointer"
+              className="mt-0.5 h-4 w-4 rounded-md border-slate-700 bg-slate-900 text-cyan-500 accent-cyan-500 focus:ring-0 cursor-pointer"
             />
-            <div className="text-xs text-slate-400 leading-relaxed">
+            <div className="text-xs text-slate-400 leading-relaxed select-none">
               <label htmlFor="terms" className="cursor-pointer inline">
                 I agree to the{" "}
               </label>
               <button
                 type="button"
                 onClick={handleOpenTerms}
-                className="font-semibold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition cursor-pointer"
+                className="font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition cursor-pointer"
               >
                 Terms of Service
               </button>{" "}
@@ -362,7 +525,7 @@ export default function Register() {
               <button
                 type="button"
                 onClick={handleOpenPrivacy}
-                className="font-semibold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition cursor-pointer"
+                className="font-bold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition cursor-pointer"
               >
                 Privacy Policy
               </button>
@@ -370,16 +533,19 @@ export default function Register() {
             </div>
           </div>
 
-          {/* Submit Button */}
+          {/* Submit Action Button */}
           <button
             type="submit"
             disabled={loading}
-            className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all duration-300 hover:shadow-blue-500/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
+            className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 py-3.5 text-xs sm:text-sm font-bold text-white shadow-xl shadow-indigo-600/30 transition-all duration-300 hover:shadow-cyan-500/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 cursor-pointer"
           >
+            {/* Shimmer Light Reflection on Hover */}
+            <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full pointer-events-none" />
+
             {loading ? (
               <>
-                <Loader2 size={18} className="animate-spin" />
-                <span>Creating Account...</span>
+                <Loader2 size={18} className="animate-spin text-white" />
+                <span>Creating Account with AI...</span>
               </>
             ) : (
               <>
@@ -393,11 +559,11 @@ export default function Register() {
           </button>
 
           {/* Switch to Login */}
-          <div className="pt-1 text-center text-sm text-slate-400">
+          <div className="border-t border-white/5 pt-3 text-center text-xs text-slate-400">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-semibold text-cyan-400 transition hover:text-cyan-300 hover:underline"
+              className="font-bold text-cyan-400 transition hover:text-cyan-300 hover:underline"
             >
               Sign In
             </Link>
