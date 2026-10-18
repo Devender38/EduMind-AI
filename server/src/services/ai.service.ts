@@ -199,6 +199,121 @@ async function getDocumentContext(
   }
 }
 
+export function parseAISummary(raw: string): {
+  summary: string;
+  keywords: string[];
+  reading_time: number;
+} {
+  if (!raw || typeof raw !== "string") {
+    return {
+      summary: "Comprehensive study summary generated.",
+      keywords: ["Study", "Concepts"],
+      reading_time: 5,
+    };
+  }
+
+  let cleaned = raw
+    .replace(/<think>[\s\S]*?<\/think>/g, "")
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+
+  // 1. Direct JSON parse attempt
+  try {
+    const parsed = JSON.parse(cleaned);
+    if (parsed && typeof parsed === "object") {
+      let sumText = parsed.summary || "";
+      if (typeof sumText === "object") sumText = JSON.stringify(sumText);
+      return {
+        summary: String(sumText).trim(),
+        keywords: Array.isArray(parsed.keywords)
+          ? parsed.keywords.map(String)
+          : ["Study", "Concepts"],
+        reading_time: Number(parsed.reading_time) || 5,
+      };
+    }
+  } catch {
+    // Continue to fallback extractions
+  }
+
+  // 2. Extract JSON substring between { and }
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    const jsonCandidate = cleaned.substring(firstBrace, lastBrace + 1);
+    try {
+      const parsed = JSON.parse(jsonCandidate);
+      if (parsed && typeof parsed === "object") {
+        return {
+          summary: String(parsed.summary || "").trim(),
+          keywords: Array.isArray(parsed.keywords)
+            ? parsed.keywords.map(String)
+            : ["Study", "Concepts"],
+          reading_time: Number(parsed.reading_time) || 5,
+        };
+      }
+    } catch {
+      // 3. Regex extraction when JSON string has unescaped control chars / newlines
+      try {
+        const summaryMatch = jsonCandidate.match(
+          /"summary"\s*:\s*"([\s\S]*?)(?<!\\)"/
+        );
+        const keywordsMatch = jsonCandidate.match(
+          /"keywords"\s*:\s*\[([\s\S]*?)\]/
+        );
+        const timeMatch = jsonCandidate.match(/"reading_time"\s*:\s*(\d+)/);
+
+        const extractedSummary = summaryMatch
+          ? summaryMatch[1]
+              .replace(/\\n/g, "\n")
+              .replace(/\\"/g, '"')
+              .replace(/\\\\/g, "\\")
+          : "";
+
+        let extractedKeywords: string[] = [];
+        if (keywordsMatch && keywordsMatch[1]) {
+          extractedKeywords = keywordsMatch[1]
+            .split(",")
+            .map((k) => k.replace(/["'\r\n]/g, "").trim())
+            .filter(Boolean);
+        }
+
+        if (extractedSummary) {
+          return {
+            summary: extractedSummary.trim(),
+            keywords:
+              extractedKeywords.length > 0
+                ? extractedKeywords
+                : ["Study", "Concepts"],
+            reading_time: timeMatch ? parseInt(timeMatch[1], 10) : 5,
+          };
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  // 4. Last resort: if string still has { "summary": "..." } structure
+  if (cleaned.startsWith("{") && cleaned.includes('"summary"')) {
+    const match = cleaned.match(/"summary"\s*:\s*"([\s\S]*?)(?<!\\)"/);
+    if (match && match[1]) {
+      return {
+        summary: match[1].replace(/\\n/g, "\n").replace(/\\"/g, '"'),
+        keywords: ["Study", "Concepts"],
+        reading_time: 5,
+      };
+    }
+  }
+
+  return {
+    summary: cleaned,
+    keywords: ["Study", "Concepts"],
+    reading_time: 5,
+  };
+}
+
 export class AIService {
   /**
    * Upload and index PDF to Python AI Service
@@ -347,33 +462,23 @@ ${docContext || "General Study Topic"}`;
         [
           {
             role: "system",
-            content: "You are an expert academic summarizer. Always respond in valid JSON.",
+            content:
+              "You are an expert academic summarizer. Always output raw, valid JSON only without markdown code fences or surrounding text.",
           },
           { role: "user", content: prompt },
         ],
         true
       );
 
-      try {
-        const parsed = JSON.parse(raw);
-        return {
-          success: true,
-          summary: parsed.summary || "Summary generated successfully.",
-          keywords: parsed.keywords || ["Study", "Education", "Concepts"],
-          reading_time: parsed.reading_time || 5,
-          page_count: 1,
-          chunk_count: 1,
-        };
-      } catch {
-        return {
-          success: true,
-          summary: raw || "Study summary generated.",
-          keywords: ["Study", "Concepts"],
-          reading_time: 5,
-          page_count: 1,
-          chunk_count: 1,
-        };
-      }
+      const parsedResult = parseAISummary(raw);
+      return {
+        success: true,
+        summary: parsedResult.summary,
+        keywords: parsedResult.keywords,
+        reading_time: parsedResult.reading_time,
+        page_count: 1,
+        chunk_count: 1,
+      };
     }
   }
 

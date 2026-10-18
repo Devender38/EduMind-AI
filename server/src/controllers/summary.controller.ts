@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Document from "../models/Document";
-import { AIService } from "../services/ai.service";
+import { AIService, parseAISummary } from "../services/ai.service";
 import { createLogger } from "../utils/logger";
 
 const logger = createLogger("SummaryController");
@@ -36,12 +36,36 @@ export class SummaryController {
 
       // Return cached summary if detailed enough (> 100 chars)
       if (document.summary && document.summary.trim().length > 100) {
+        let currentSummary = document.summary.trim();
+        let currentKeywords = document.keywords || [];
+        let currentReadingTime = document.readingTime;
+
+        // If the database cached raw JSON string, clean it and update the DB!
+        if (currentSummary.startsWith("{") && currentSummary.includes('"summary"')) {
+          const parsed = parseAISummary(currentSummary);
+          currentSummary = parsed.summary;
+          if (parsed.keywords && parsed.keywords.length > 0) {
+            currentKeywords = parsed.keywords;
+          }
+          if (parsed.reading_time) {
+            currentReadingTime = parsed.reading_time;
+          }
+          await Document.findByIdAndUpdate(documentId, {
+            $set: {
+              summary: currentSummary,
+              keywords: currentKeywords,
+              readingTime: currentReadingTime,
+            },
+          });
+          logger.info(`Cleaned and migrated raw JSON summary for document: ${documentId}`);
+        }
+
         logger.info(`Returning cached summary for document: ${documentId}`);
         return res.status(200).json({
           success: true,
-          summary: document.summary,
-          keywords: document.keywords || [],
-          reading_time: document.readingTime || Math.max(1, Math.ceil(document.summary.split(/\s+/).length / 200)),
+          summary: currentSummary,
+          keywords: currentKeywords,
+          reading_time: currentReadingTime || Math.max(1, Math.ceil(currentSummary.split(/\s+/).length / 200)),
           page_count: document.pageCount || 0,
           chunk_count: document.chunkCount || 0,
         });

@@ -29,6 +29,53 @@ interface Props {
   document: DocumentItem | null;
 }
 
+function cleanSummaryContent(raw: string | undefined): {
+  text: string;
+  parsedKeywords?: string[];
+  parsedReadingTime?: number;
+} {
+  if (!raw) return { text: "" };
+  let str = String(raw).trim();
+
+  // Strip markdown code fences if wrapped around JSON
+  str = str.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
+
+  if (str.startsWith("{") && str.includes('"summary"')) {
+    try {
+      const parsed = JSON.parse(str);
+      if (parsed && parsed.summary) {
+        return {
+          text: String(parsed.summary).trim(),
+          parsedKeywords: Array.isArray(parsed.keywords) ? parsed.keywords : undefined,
+          parsedReadingTime: typeof parsed.reading_time === "number" ? parsed.reading_time : undefined,
+        };
+      }
+    } catch {
+      // Regex extraction fallback
+      const summaryMatch = str.match(/"summary"\s*:\s*"([\s\S]*?)(?<!\\)"/);
+      const keywordsMatch = str.match(/"keywords"\s*:\s*\[([\s\S]*?)\]/);
+      const timeMatch = str.match(/"reading_time"\s*:\s*(\d+)/);
+
+      if (summaryMatch && summaryMatch[1]) {
+        let extractedKeywords: string[] | undefined = undefined;
+        if (keywordsMatch && keywordsMatch[1]) {
+          extractedKeywords = keywordsMatch[1]
+            .split(",")
+            .map((k) => k.replace(/["'\r\n]/g, "").trim())
+            .filter(Boolean);
+        }
+        return {
+          text: summaryMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\\\/g, "\\"),
+          parsedKeywords: extractedKeywords,
+          parsedReadingTime: timeMatch ? parseInt(timeMatch[1], 10) : undefined,
+        };
+      }
+    }
+  }
+
+  return { text: str };
+}
+
 export default function SummaryCard({ document }: Props) {
   const [loading, setLoading] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
@@ -46,9 +93,10 @@ export default function SummaryCard({ document }: Props) {
     try {
       setLoading(true);
       const data = await getSummary(document._id);
-      setSummary(data.summary || "");
-      setKeywords(data.keywords || []);
-      setReadingTime(data.reading_time || 1);
+      const { text, parsedKeywords, parsedReadingTime } = cleanSummaryContent(data.summary);
+      setSummary(text || "");
+      setKeywords(parsedKeywords || data.keywords || []);
+      setReadingTime(parsedReadingTime || data.reading_time || 1);
       setPages(data.page_count || 1);
       setChunks(data.chunk_count || 1);
     } catch (err) {
@@ -67,9 +115,10 @@ export default function SummaryCard({ document }: Props) {
         setSpeaking(false);
       }
       const data = await regenerateSummary(document._id);
-      setSummary(data.summary || "");
-      setKeywords(data.keywords || []);
-      setReadingTime(data.reading_time || 1);
+      const { text, parsedKeywords, parsedReadingTime } = cleanSummaryContent(data.summary);
+      setSummary(text || "");
+      setKeywords(parsedKeywords || data.keywords || []);
+      setReadingTime(parsedReadingTime || data.reading_time || 1);
       setPages(data.page_count || 1);
       setChunks(data.chunk_count || 1);
       toast.success("Detailed full-explanation summary regenerated!");
