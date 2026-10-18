@@ -35,8 +35,8 @@ export const normalizeText = (text: string): string => {
   return (text || "")
     .trim()
     .toLowerCase()
-    .replace(/^[a-d]\s*[\)\.\:\-]\s*/i, "")
-    .replace(/^option\s*[a-d]\s*[\)\.\:\-]?\s*/i, "")
+    .replace(/^[a-d]\s*[).:-]\s*/i, "")
+    .replace(/^option\s*[a-d]\s*[).:-]?\s*/i, "")
     .replace(/[^a-z0-9]/g, "");
 };
 

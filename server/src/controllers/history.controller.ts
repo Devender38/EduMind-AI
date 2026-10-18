@@ -15,6 +15,9 @@ export class HistoryController {
    */
   static async getActivityHistory(req: Request, res: Response) {
     const userId = (req as any).user?.id || (req as any).user?._id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
     const { activityType, limit = 50 } = req.query;
 
     try {
@@ -45,6 +48,9 @@ export class HistoryController {
    */
   static async logActivity(req: Request, res: Response) {
     const userId = (req as any).user?.id || (req as any).user?._id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
     const { documentId, activityType, title, metadata } = req.body;
 
     try {
@@ -73,6 +79,9 @@ export class HistoryController {
    */
   static async getAnalyticsTelemetry(req: Request, res: Response) {
     const userId = (req as any).user?.id || (req as any).user?._id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
 
     try {
       const userFilter = { $or: [{ user: userId }, { userId }] };

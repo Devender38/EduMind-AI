@@ -16,9 +16,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-
+import { ChatGPTMarkdown } from "../common/ChatGPTMarkdown";
 import { askAI } from "../../api/chat.api";
 import { getMessages, type Conversation } from "../../api/conversation.api";
 import { createBookmark } from "../../api/bookmark.api";
@@ -357,12 +355,8 @@ export default function ChatBox({
                   </div>
                 </div>
 
-                {/* Markdown Content */}
-                <div className="prose prose-invert max-w-none text-xs leading-relaxed">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {msg.content}
-                  </ReactMarkdown>
-                </div>
+                {/* ChatGPT Formatted Markdown Content */}
+                <ChatGPTMarkdown content={msg.content} />
 
                 {/* Grounded Sources & Citations */}
                 {msg.sources && msg.sources.length > 0 && (

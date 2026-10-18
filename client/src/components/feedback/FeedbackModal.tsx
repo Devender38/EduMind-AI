@@ -16,7 +16,6 @@ import {
   getRecentFeedbacks,
   type FeedbackItem,
 } from "../../api/feedback.api";
-import { useAuthStore } from "../../store/authStore";
 
 interface Props {
   isOpen: boolean;
@@ -47,7 +46,6 @@ const RATING_LABELS: Record<number, string> = {
 };
 
 export default function FeedbackModal({ isOpen, onClose }: Props) {
-  const { user } = useAuthStore();
   const [tab, setTab] = useState<"write" | "reviews">("write");
   const [rating, setRating] = useState<number>(5);
   const [hoverRating, setHoverRating] = useState<number>(0);
@@ -58,13 +56,6 @@ export default function FeedbackModal({ isOpen, onClose }: Props) {
   const [recentFeedbacks, setRecentFeedbacks] = useState<FeedbackItem[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [submittedSuccess, setSubmittedSuccess] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      loadReviews();
-      setSubmittedSuccess(false);
-    }
-  }, [isOpen]);
 
   const loadReviews = async () => {
     try {
@@ -77,6 +68,12 @@ export default function FeedbackModal({ isOpen, onClose }: Props) {
       setLoadingReviews(false);
     }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      loadReviews();
+    }
+  }, [isOpen]);
 
   const toggleTag = (tag: string) => {
     if (selectedTags.includes(tag)) {

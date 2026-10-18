@@ -28,10 +28,6 @@ export default function DocumentsPage() {
   const [showUpload, setShowUpload] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => {
-    loadDocuments();
-  }, [refreshKey]);
-
   const loadDocuments = async () => {
     try {
       setLoading(true);
@@ -44,6 +40,10 @@ export default function DocumentsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadDocuments();
+  }, [refreshKey]);
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();

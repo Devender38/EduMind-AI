@@ -45,7 +45,7 @@ export default function VerifyEmail() {
           );
         });
     }
-  }, [token]);
+  }, [token, updateUser]);
 
   const handleResend = async (e: React.FormEvent) => {
     e.preventDefault();

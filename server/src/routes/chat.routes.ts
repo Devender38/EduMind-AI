@@ -14,4 +14,16 @@ router.post(
   ChatController.chat
 );
 
+router.post(
+  "/transcribe-voice",
+  protect,
+  ChatController.transcribeVoice
+);
+
+// High-reliability MP3 audio TTS stream
+router.get(
+  "/tts",
+  ChatController.tts
+);
+
 export default router;

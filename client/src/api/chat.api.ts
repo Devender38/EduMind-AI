@@ -38,3 +38,11 @@ export const askQuestion = async (
 ): Promise<ChatResponse> => {
   return askAI({ question, documentId });
 };
+
+export const transcribeVoice = async (
+  audio: string,
+  mimeType?: string
+): Promise<string> => {
+  const response = await api.post("/chat/transcribe-voice", { audio, mimeType });
+  return response.data?.text || "";
+};

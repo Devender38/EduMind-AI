@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../store/authStore";
+import { LegalModal, type LegalTab } from "../components/auth/LegalModal";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -31,6 +32,22 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [legalModalTab, setLegalModalTab] = useState<LegalTab>("terms");
+
+  const handleOpenTerms = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLegalModalTab("terms");
+    setIsLegalModalOpen(true);
+  };
+
+  const handleOpenPrivacy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLegalModalTab("privacy");
+    setIsLegalModalOpen(true);
+  };
 
   // Real-time password strength calculation
   const strength = useMemo(() => {
@@ -330,11 +347,27 @@ export default function Register() {
               onChange={(e) => setTermsAccepted(e.target.checked)}
               className="mt-1 h-4 w-4 rounded border-slate-700 bg-slate-900 text-cyan-500 accent-cyan-500 focus:ring-0 cursor-pointer"
             />
-            <label htmlFor="terms" className="text-xs text-slate-400 leading-relaxed cursor-pointer">
-              I agree to the{" "}
-              <span className="text-cyan-400 hover:underline">Terms of Service</span> and{" "}
-              <span className="text-cyan-400 hover:underline">Privacy Policy</span>.
-            </label>
+            <div className="text-xs text-slate-400 leading-relaxed">
+              <label htmlFor="terms" className="cursor-pointer inline">
+                I agree to the{" "}
+              </label>
+              <button
+                type="button"
+                onClick={handleOpenTerms}
+                className="font-semibold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition cursor-pointer"
+              >
+                Terms of Service
+              </button>{" "}
+              and{" "}
+              <button
+                type="button"
+                onClick={handleOpenPrivacy}
+                className="font-semibold text-cyan-400 hover:text-cyan-300 underline underline-offset-2 transition cursor-pointer"
+              >
+                Privacy Policy
+              </button>
+              .
+            </div>
           </div>
 
           {/* Submit Button */}
@@ -371,6 +404,17 @@ export default function Register() {
           </div>
         </form>
       </motion.div>
+
+      {/* Terms & Privacy Legal Modal */}
+      <LegalModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        defaultTab={legalModalTab}
+        onAccept={() => {
+          setTermsAccepted(true);
+          toast.success("Terms & Privacy Policy accepted!");
+        }}
+      />
     </div>
   );
 }

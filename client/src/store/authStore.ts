@@ -116,7 +116,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const profile = await getUserProfile();
       localStorage.setItem("user", JSON.stringify(profile));
       set({ user: profile as UserProfile, isAuthenticated: true });
-    } catch (err) {
+    } catch {
       console.warn("CheckAuth failed, session may be refreshed or expired");
     }
   },

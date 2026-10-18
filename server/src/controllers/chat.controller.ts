@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
+import axios from "axios";
 
 import Conversation from "../models/Conversation";
 import Chat from "../models/Chat";
@@ -130,6 +131,154 @@ export class ChatController {
         success: false,
         message: error.message || "Internal Server Error",
       });
+    }
+  }
+
+  static async transcribeVoice(req: Request, res: Response) {
+    try {
+      const { audio, mimeType } = req.body;
+      if (!audio) {
+        return res.status(400).json({ success: false, message: "No audio data provided" });
+      }
+
+      const apiKey = process.env.OPENROUTER_API_KEY || "";
+      if (!apiKey) {
+        return res.status(500).json({ success: false, message: "AI API key missing" });
+      }
+
+      const audioMime = mimeType || "audio/webm";
+      const audioUrl = audio.startsWith("data:") ? audio : `data:${audioMime};base64,${audio}`;
+
+      const response = await axios.post(
+        "https://openrouter.ai/api/v1/chat/completions",
+        {
+          model: "google/gemini-2.5-flash",
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "You are a voice transcription assistant for students. Listen carefully to this audio recording and transcribe the spoken words into clear text. If the student spoke in Hindi, English, or Hinglish, transcribe it accurately. Output ONLY the transcribed text. If the audio is silent or unintelligible, output an empty string. Do not include any explanations, introductory remarks, or quotation marks.",
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: audioUrl,
+                  },
+                },
+              ],
+            },
+          ],
+          max_tokens: 300,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://edumind-ai.vercel.app",
+            "X-Title": "EduMind AI Voice",
+          },
+          timeout: 25000,
+        }
+      );
+
+      const transcribed = response.data?.choices?.[0]?.message?.content?.trim() || "";
+      const cleaned = transcribed
+        .replace(/^(the audio is silent|no speech detected|silent)\.?$/i, "")
+        .trim();
+
+      return res.json({
+        success: true,
+        text: cleaned,
+      });
+    } catch (error: any) {
+      logger.error("Audio transcription error:", error.response?.data || error.message);
+      return res.status(500).json({
+        success: false,
+        message: error.response?.data?.error?.message || "Failed to transcribe audio",
+      });
+    }
+  }
+
+  static async tts(req: Request, res: Response) {
+    try {
+      const rawText = ((req.query.text as string) || "").trim();
+      const lang = ((req.query.lang as string) || "en").slice(0, 5);
+
+      if (!rawText) {
+        return res.status(400).send("Text is required");
+      }
+
+      // Clean markdown and formatting symbols for clear speech
+      const clean = rawText
+        .replace(/#{1,6}\s+/g, "")
+        .replace(/[*_`#>~[\]()]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      const targetLang = lang.startsWith("hi")
+        ? "hi"
+        : lang.toLowerCase().includes("in")
+        ? "en-IN"
+        : "en";
+
+      // Google translate_tts has a strict ~200 character limit per request.
+      // Split into word-safe chunks of max 175 characters.
+      const words = clean.slice(0, 800).split(/\s+/);
+      const chunks: string[] = [];
+      let currentChunk = "";
+
+      for (const word of words) {
+        if (!word) continue;
+        if ((currentChunk + " " + word).trim().length <= 175) {
+          currentChunk = (currentChunk + " " + word).trim();
+        } else {
+          if (currentChunk) chunks.push(currentChunk);
+          currentChunk = word.slice(0, 175);
+        }
+      }
+      if (currentChunk) chunks.push(currentChunk);
+
+      if (chunks.length === 0) {
+        return res.status(400).send("No readable text provided");
+      }
+
+      // Fetch each chunk in parallel from Google TTS
+      const buffers = await Promise.all(
+        chunks.map(async (chunk) => {
+          const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${encodeURIComponent(
+            targetLang
+          )}&client=tw-ob&q=${encodeURIComponent(chunk)}`;
+
+          const resp = await axios.get(ttsUrl, {
+            headers: {
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              Referer: "https://translate.google.com/",
+            },
+            responseType: "arraybuffer",
+            timeout: 10000,
+          });
+
+          return Buffer.from(resp.data);
+        })
+      );
+
+      // Concatenate MP3 binary streams seamlessly
+      const mergedAudio = Buffer.concat(buffers);
+
+      res.set({
+        "Content-Type": "audio/mpeg",
+        "Cross-Origin-Resource-Policy": "cross-origin",
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "public, max-age=86400",
+      });
+
+      return res.send(mergedAudio);
+    } catch (error: any) {
+      logger.error("TTS audio stream error:", error.message);
+      return res.status(500).send("TTS audio failed");
     }
   }
 }

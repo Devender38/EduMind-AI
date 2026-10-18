@@ -34,7 +34,10 @@ export const getDashboardStats = async (
       0
     );
 
-    const storageUsed = `${(storageBytes / (1024 * 1024)).toFixed(2)} MB`;
+    const storageUsed =
+      storageBytes > 0 && storageBytes < 1024 * 10
+        ? "< 0.01 MB"
+        : `${(storageBytes / (1024 * 1024)).toFixed(2)} MB`;
 
     // 2. Real-time Questions & Answers stats
     const conversations = await Conversation.find({ user: userId }).select("_id document title");

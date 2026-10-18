@@ -121,7 +121,7 @@ async function callAIDirect(
       model: selectedModel,
       messages,
       temperature: jsonMode ? 0.1 : 0.5,
-      max_tokens: jsonMode ? 3500 : 2500,
+      max_tokens: jsonMode ? 3000 : 2500,
     };
 
     const response = await axios.post(
