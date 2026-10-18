@@ -266,28 +266,6 @@ export default function Landing() {
         </div>
 
         {/* ========================================================
-            TRUSTED BY STUDENTS AT TOP UNIVERSITIES TICKER
-            ======================================================== */}
-        <div className="mx-auto mt-14 max-w-7xl px-6 lg:px-8">
-          <p className="text-center text-xs font-semibold uppercase tracking-widest text-slate-500">
-            Trusted by top scholars and researchers at
-          </p>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-8 sm:gap-12 opacity-60 grayscale hover:grayscale-0 transition-all duration-300">
-            {["Stanford University", "MIT", "Oxford", "Harvard", "Cambridge", "UC Berkeley", "Imperial College"].map(
-              (uni, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-2 text-xs sm:text-sm font-bold tracking-wider text-slate-400"
-                >
-                  <GraduationCap size={15} className="text-cyan-400" />
-                  <span>{uni}</span>
-                </div>
-              )
-            )}
-          </div>
-        </div>
-
-        {/* ========================================================
             INTERACTIVE LIVE PLAYGROUND / PRODUCT SHOWCASE
             ======================================================== */}
         <div id="interactive-demo" className="mx-auto mt-16 max-w-6xl px-4 sm:px-6 lg:px-8">
