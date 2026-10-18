@@ -1,6 +1,24 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Children, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+
+function getNodeText(node: any): string {
+  if (!node) return "";
+  if (typeof node === "string") return node;
+  if (typeof node === "number") return String(node);
+  if (Array.isArray(node)) {
+    return node
+      .filter((child) => child?.type !== "ul" && child?.type !== "ol")
+      .map(getNodeText)
+      .join(" ")
+      .trim();
+  }
+  if (node?.props?.children) {
+    if (node.type === "ul" || node.type === "ol") return "";
+    return getNodeText(node.props.children);
+  }
+  return "";
+}
 import {
   CalendarRange,
   Zap,
@@ -332,25 +350,60 @@ export default function StudyPlanner({ document }: StudyPlannerProps) {
                   <ul className="my-2 space-y-2 list-none pl-0" {...props} />
                 ),
                 li: ({ node: _node, children, ...props }) => {
-                  const taskText = String(children);
+                  const childArray = Children.toArray(children);
+                  const directChildren: ReactNode[] = [];
+                  const nestedLists: ReactNode[] = [];
+
+                  childArray.forEach((child: any) => {
+                    if (child?.type === "ul" || child?.type === "ol") {
+                      nestedLists.push(child);
+                    } else if (child?.type === "input" && child?.props?.type === "checkbox") {
+                      // Omit redundant static gfm checkbox
+                    } else {
+                      directChildren.push(child);
+                    }
+                  });
+
+                  const taskText = getNodeText(directChildren) || "task";
                   const isChecked = checkedTasks[taskText] || false;
+
                   return (
-                    <li
-                      onClick={() => toggleTask(taskText)}
-                      className={`flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition ${
-                        isChecked
-                          ? "border-emerald-500/40 bg-emerald-500/10 text-zinc-400 line-through"
-                          : "border-zinc-800/80 bg-zinc-950/40 text-zinc-200 hover:border-blue-500/40"
-                      }`}
-                      {...props}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => toggleTask(taskText)}
-                        className="mt-0.5 h-4 w-4 rounded accent-blue-600 cursor-pointer flex-shrink-0"
-                      />
-                      <div className="flex-1">{children}</div>
+                    <li className="list-none my-2" {...props}>
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleTask(taskText);
+                        }}
+                        className={`group flex items-start gap-3 rounded-xl border p-3 cursor-pointer transition select-none ${
+                          isChecked
+                            ? "border-emerald-500/40 bg-emerald-500/10 text-zinc-400"
+                            : "border-zinc-800/80 bg-zinc-950/40 text-zinc-200 hover:border-blue-500/40"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            toggleTask(taskText);
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="mt-0.5 h-4 w-4 rounded accent-blue-600 cursor-pointer flex-shrink-0"
+                        />
+                        <div
+                          className={`flex-1 text-xs sm:text-sm leading-relaxed transition ${
+                            isChecked ? "line-through text-zinc-400" : "text-zinc-200"
+                          }`}
+                        >
+                          {directChildren}
+                        </div>
+                      </div>
+
+                      {nestedLists.length > 0 && (
+                        <div className="mt-2 ml-4 sm:ml-6 border-l-2 border-zinc-800/80 pl-3 space-y-2">
+                          {nestedLists}
+                        </div>
+                      )}
                     </li>
                   );
                 },
