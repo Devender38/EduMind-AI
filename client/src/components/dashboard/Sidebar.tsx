@@ -86,7 +86,11 @@ function Sidebar({ onClose }: SidebarProps) {
 
       {/* Logo */}
       <div className="border-b border-white/10 p-6">
-        <Link to="/dashboard" className="group flex items-center gap-3">
+        <Link
+          to="/dashboard"
+          onClick={onClose}
+          className="group flex items-center gap-3"
+        >
           <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 shadow-lg shadow-cyan-500/25 ring-1 ring-white/20 transition group-hover:scale-105">
             <Brain size={22} className="text-white" />
             <div className="absolute inset-0 rounded-xl bg-cyan-400 opacity-0 blur transition group-hover:opacity-40" />
@@ -108,6 +112,7 @@ function Sidebar({ onClose }: SidebarProps) {
       <div className="border-b border-white/10 p-4">
         <Link
           to="/profile"
+          onClick={onClose}
           className="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 p-3.5 backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/40 hover:bg-slate-800/80 hover:shadow-lg hover:shadow-cyan-500/10"
         >
           <div className="flex items-center gap-3 overflow-hidden">
@@ -147,6 +152,7 @@ function Sidebar({ onClose }: SidebarProps) {
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={onClose}
               className={({ isActive }) =>
                 `group relative flex items-center justify-between rounded-xl px-4 py-3 text-xs font-semibold transition-all duration-200 ${
                   isActive

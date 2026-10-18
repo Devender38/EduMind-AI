@@ -38,6 +38,36 @@ if (typeof window !== "undefined" && "speechSynthesis" in window) {
   }
 }
 
+// Mobile Audio Unlock: iOS Safari & Android Chrome require initial user interaction to play speech
+let isAudioUnlockedOnMobile = false;
+export const unlockAudioForMobile = () => {
+  if (isAudioUnlockedOnMobile || typeof window === "undefined") return;
+  isAudioUnlockedOnMobile = true;
+  try {
+    if ("speechSynthesis" in window) {
+      const silent = new SpeechSynthesisUtterance("");
+      silent.volume = 0;
+      silent.rate = 2;
+      window.speechSynthesis.speak(silent);
+    }
+  } catch {
+    // ignore
+  }
+};
+
+if (typeof window !== "undefined") {
+  const unlockEvents = ["touchstart", "touchend", "click"];
+  const handleFirstInteraction = () => {
+    unlockAudioForMobile();
+    unlockEvents.forEach((evt) =>
+      window.removeEventListener(evt, handleFirstInteraction)
+    );
+  };
+  unlockEvents.forEach((evt) =>
+    window.addEventListener(evt, handleFirstInteraction, { passive: true })
+  );
+}
+
 export const addSpeechStateListener = (
   cb: (speakingId: string | null, isPaused: boolean) => void
 ) => {

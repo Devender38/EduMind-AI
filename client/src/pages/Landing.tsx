@@ -34,9 +34,11 @@ import {
   Sliders,
   Check,
   Compass,
+  Menu,
 } from "lucide-react";
 
 export default function Landing() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<
     "chat" | "planner" | "flashcard" | "notes" | "mindmap"
   >("chat");
@@ -153,23 +155,101 @@ export default function Landing() {
           </nav>
 
           {/* Action CTAs */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               to="/login"
-              className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-semibold text-slate-200 backdrop-blur-md transition hover:border-white/20 hover:bg-white/10 hover:text-white"
+              className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 backdrop-blur-md transition hover:border-white/20 hover:bg-white/10 hover:text-white"
             >
               Sign In
             </Link>
 
             <Link
               to="/register"
-              className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 px-4 py-1.5 text-xs font-bold text-white shadow-lg shadow-cyan-500/25 transition hover:shadow-cyan-500/40 hover:scale-[1.02]"
+              className="hidden sm:inline-flex group relative items-center gap-1.5 overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-lg shadow-cyan-500/25 transition hover:shadow-cyan-500/40 hover:scale-[1.02]"
             >
-              <span>Get Started Free</span>
+              <span>Get Started</span>
               <ArrowRight size={13} className="transition group-hover:translate-x-0.5" />
             </Link>
+
+            {/* Mobile Hamburger Button */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle mobile navigation"
+              className="flex lg:hidden items-center justify-center rounded-xl border border-white/10 bg-white/5 p-2 text-slate-300 hover:bg-white/10 hover:text-white transition"
+            >
+              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Sheet */}
+        {mobileMenuOpen && (
+          <div className="border-t border-white/10 bg-[#07090e]/95 px-6 py-4 backdrop-blur-2xl lg:hidden animate-in fade-in slide-in-from-top-3 duration-200">
+            <nav className="flex flex-col space-y-3 text-sm font-semibold text-slate-300">
+              <a
+                href="#how-it-works"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-1.5 hover:text-cyan-400 transition"
+              >
+                How It Works
+              </a>
+              <a
+                href="#interactive-demo"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-1.5 hover:text-cyan-400 transition"
+              >
+                Live Preview
+              </a>
+              <a
+                href="#voice-tutor"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 py-1.5 hover:text-cyan-400 transition"
+              >
+                <Mic size={15} className="text-cyan-400" />
+                <span>AI Voice Tutor</span>
+              </a>
+              <a
+                href="#features"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-1.5 hover:text-cyan-400 transition"
+              >
+                Features
+              </a>
+              <a
+                href="#workflows"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-1.5 hover:text-cyan-400 transition"
+              >
+                Study Workflows
+              </a>
+              <a
+                href="#calculator"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-1.5 hover:text-cyan-400 transition"
+              >
+                Cram Time Calculator
+              </a>
+              <a
+                href="#faq"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-1.5 hover:text-cyan-400 transition"
+              >
+                FAQ
+              </a>
+              <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
+                <Link
+                  to="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 py-3 text-xs font-bold text-white shadow-lg shadow-cyan-500/25"
+                >
+                  <span>Get Started Free</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* ========================================================

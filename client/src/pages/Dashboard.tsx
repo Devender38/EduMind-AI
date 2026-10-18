@@ -249,8 +249,8 @@ export default function Dashboard() {
           {/* Right Main Interactive Work Area */}
           <div className="space-y-6 2xl:col-span-7">
             {/* Study Mode Navigation Tabs */}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-white/10 bg-slate-900/80 p-2.5 shadow-xl backdrop-blur-2xl">
-              <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-3xl border border-white/10 bg-slate-900/80 p-2.5 shadow-xl backdrop-blur-2xl">
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -258,7 +258,7 @@ export default function Dashboard() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 rounded-2xl px-3.5 py-2 text-xs font-bold transition-all duration-200 ${
+                      className={`flex shrink-0 items-center gap-2 rounded-2xl px-3.5 py-2 text-xs font-bold transition-all duration-200 ${
                         isActive
                           ? `${tab.activeBg}`
                           : "text-slate-400 hover:bg-slate-800/80 hover:text-white"
@@ -272,7 +272,7 @@ export default function Dashboard() {
               </div>
 
               {selectedDocument && (
-                <div className="flex items-center gap-2 rounded-2xl border border-cyan-500/20 bg-cyan-500/10 px-3.5 py-1.5 text-xs font-semibold text-cyan-300">
+                <div className="flex shrink-0 items-center gap-2 rounded-2xl border border-cyan-500/20 bg-cyan-500/10 px-3.5 py-1.5 text-xs font-semibold text-cyan-300">
                   <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
                   <span className="max-w-[180px] truncate">
                     {selectedDocument.title}

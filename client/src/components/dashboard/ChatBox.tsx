@@ -415,7 +415,7 @@ export default function ChatBox({
             <button
               onClick={sendMessage}
               disabled={loading || !conversation || !question.trim()}
-              className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25 transition hover:brightness-110 active:scale-95 disabled:opacity-50"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25 transition hover:brightness-110 active:scale-95 disabled:opacity-50"
             >
               {loading ? (
                 <Loader2 size={18} className="animate-spin" />

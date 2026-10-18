@@ -144,14 +144,14 @@ export default function UploadCard({
         </p>
 
         <p className="mt-1 text-xs text-slate-400">
-          or <span className="font-semibold text-cyan-400 underline decoration-cyan-400/40">browse files</span> from your computer
+          or <span className="font-semibold text-cyan-400 underline decoration-cyan-400/40">browse files</span> from your phone or computer
         </p>
 
         <input
           hidden
           ref={inputRef}
           type="file"
-          accept=".pdf"
+          accept="application/pdf,.pdf"
           onChange={(e) => {
             if (e.target.files?.length) {
               handleFileSelect(e.target.files[0]);
