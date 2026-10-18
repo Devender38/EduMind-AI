@@ -13,13 +13,10 @@ import {
   Zap,
   X,
   MessageSquareHeart,
-  Sun,
-  Moon,
 } from "lucide-react";
 import { NavLink, useNavigate, Link } from "react-router-dom";
 import FeedbackModal from "../feedback/FeedbackModal";
 import { useAuthStore } from "../../store/authStore";
-import { useTheme } from "../../context/ThemeContext";
 
 interface SidebarProps {
   onClose?: () => void;
@@ -29,7 +26,6 @@ function Sidebar({ onClose }: SidebarProps) {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const navigate = useNavigate();
   const { user, logout: storeLogout } = useAuthStore();
-  const { isDark, toggleTheme } = useTheme();
 
   const logout = async () => {
     await storeLogout();
@@ -202,31 +198,6 @@ function Sidebar({ onClose }: SidebarProps) {
             Upload notes, take quizzes, and track your study goals.
           </p>
         </div>
-      </div>
-
-      {/* Day / Night Theme Toggle */}
-      <div className="px-4 pb-2">
-        <button
-          onClick={toggleTheme}
-          title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          className={`group flex w-full items-center justify-between rounded-xl border px-4 py-2.5 text-xs font-semibold transition shadow-sm ${
-            isDark
-              ? "border-amber-400/20 bg-amber-400/10 text-amber-300 hover:bg-amber-400/20 hover:border-amber-400/40"
-              : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 hover:border-indigo-300"
-          }`}
-        >
-          <div className="flex items-center gap-2.5">
-            {isDark ? (
-              <Sun size={16} className="text-amber-400 animate-spin-slow" />
-            ) : (
-              <Moon size={16} className="text-indigo-600" />
-            )}
-            <span>{isDark ? "Light Mode" : "Dark Mode"}</span>
-          </div>
-          <span className="rounded-full bg-white/10 px-2 py-0.5 text-[9px] font-bold">
-            {isDark ? "Day ☀️" : "Night 🌙"}
-          </span>
-        </button>
       </div>
 
       {/* Feedback & Review Button */}

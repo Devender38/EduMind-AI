@@ -34,13 +34,9 @@ import {
   Sliders,
   Check,
   Compass,
-  Sun,
-  Moon,
 } from "lucide-react";
-import { useTheme } from "../context/ThemeContext";
 
 export default function Landing() {
-  const { isDark, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<
     "chat" | "planner" | "flashcard" | "notes" | "mindmap"
   >("chat");
@@ -92,44 +88,22 @@ export default function Landing() {
   ];
 
   return (
-    <div
-      className={`relative min-h-screen overflow-hidden selection:bg-cyan-500 selection:text-white transition-colors duration-300 ${
-        isDark ? "bg-[#07090e] text-slate-100" : "bg-[#f8fafc] text-slate-900"
-      }`}
-    >
+    <div className="relative min-h-screen overflow-hidden bg-[#07090e] text-slate-100 selection:bg-cyan-500 selection:text-white">
       {/* Background Gradients */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className={`absolute inset-0 bg-grid-pattern ${isDark ? "opacity-20" : "opacity-15"}`} />
-        <div className={`absolute inset-0 ${isDark ? "bg-radial-vignette" : "bg-radial-vignette opacity-40"}`} />
+        <div className="absolute inset-0 bg-grid-pattern opacity-20" />
+        <div className="absolute inset-0 bg-radial-vignette" />
 
         {/* Soft Background Accents */}
-        <div
-          className={`absolute -top-40 left-1/4 h-[450px] w-[450px] rounded-full blur-[130px] transition-all duration-500 ${
-            isDark ? "bg-cyan-500/10" : "bg-cyan-500/15"
-          }`}
-        />
-        <div
-          className={`absolute top-1/3 -right-20 h-[450px] w-[450px] rounded-full blur-[140px] transition-all duration-500 ${
-            isDark ? "bg-indigo-500/10" : "bg-indigo-500/15"
-          }`}
-        />
-        <div
-          className={`absolute bottom-1/4 left-10 h-[500px] w-[500px] rounded-full blur-[160px] transition-all duration-500 ${
-            isDark ? "bg-purple-500/10" : "bg-purple-500/15"
-          }`}
-        />
+        <div className="absolute -top-40 left-1/4 h-[450px] w-[450px] rounded-full bg-cyan-500/10 blur-[130px]" />
+        <div className="absolute top-1/3 -right-20 h-[450px] w-[450px] rounded-full bg-indigo-500/10 blur-[140px]" />
+        <div className="absolute bottom-1/4 left-10 h-[500px] w-[500px] rounded-full bg-purple-500/10 blur-[160px]" />
       </div>
 
       {/* ========================================================
           TOP NAVIGATION BAR
           ======================================================== */}
-      <header
-        className={`sticky top-0 z-40 w-full border-b backdrop-blur-2xl transition-all duration-300 ${
-          isDark
-            ? "border-white/10 bg-[#07090e]/80"
-            : "border-slate-200/90 bg-white/85 shadow-sm"
-        }`}
-      >
+      <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#07090e]/80 backdrop-blur-2xl transition-all duration-300">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3.5 lg:px-8">
           {/* Logo */}
           <Link to="/" className="group flex items-center gap-3">
@@ -137,20 +111,12 @@ export default function Landing() {
               <Brain size={22} className="text-white" />
             </div>
             <div>
-              <span
-                className={`text-xl font-extrabold tracking-tight transition-colors ${
-                  isDark ? "text-white" : "text-slate-900"
-                }`}
-              >
+              <span className="text-xl font-extrabold tracking-tight text-white">
                 EduMind <span className="text-gradient-cyan">AI</span>
               </span>
               <div className="flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                <span
-                  className={`text-[10px] font-medium transition-colors ${
-                    isDark ? "text-slate-400" : "text-slate-500"
-                  }`}
-                >
+                <span className="text-[10px] font-medium text-slate-400">
                   Study Operating System
                 </span>
               </div>
@@ -158,72 +124,39 @@ export default function Landing() {
           </Link>
 
           {/* Nav Anchor Links */}
-          <nav
-            className={`hidden lg:flex items-center gap-6 text-xs font-semibold transition-colors ${
-              isDark ? "text-slate-300" : "text-slate-600"
-            }`}
-          >
-            <a href="#how-it-works" className="transition hover:text-cyan-500">
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-300">
+            <a href="#how-it-works" className="transition hover:text-cyan-400">
               How It Works
             </a>
-            <a href="#interactive-demo" className="transition hover:text-cyan-500">
+            <a href="#interactive-demo" className="transition hover:text-cyan-400">
               Live Preview
             </a>
             <a
               href="#voice-tutor"
-              className="transition hover:text-cyan-500 flex items-center gap-1"
+              className="transition hover:text-cyan-400 flex items-center gap-1"
             >
-              <Mic size={12} className="text-cyan-500" />
+              <Mic size={12} className="text-cyan-400" />
               <span>Voice Tutor</span>
             </a>
-            <a href="#features" className="transition hover:text-cyan-500">
+            <a href="#features" className="transition hover:text-cyan-400">
               Features
             </a>
-            <a href="#workflows" className="transition hover:text-cyan-500">
+            <a href="#workflows" className="transition hover:text-cyan-400">
               Workflows
             </a>
-            <a href="#calculator" className="transition hover:text-cyan-500">
+            <a href="#calculator" className="transition hover:text-cyan-400">
               Calculator
             </a>
-            <a href="#faq" className="transition hover:text-cyan-500">
+            <a href="#faq" className="transition hover:text-cyan-400">
               FAQ
             </a>
           </nav>
 
-          {/* Action CTAs & Day/Night Toggle */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Day / Night Mode Toggle Button */}
-            <button
-              type="button"
-              onClick={toggleTheme}
-              title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-              className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all duration-200 shadow-sm ${
-                isDark
-                  ? "border-amber-400/30 bg-amber-400/10 text-amber-300 hover:border-amber-400/60 hover:bg-amber-400/20"
-                  : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:border-indigo-400 hover:bg-indigo-100/80"
-              }`}
-            >
-              {isDark ? (
-                <>
-                  <Sun size={15} className="text-amber-400 animate-spin-slow" />
-                  <span className="text-[11px]">Light Mode</span>
-                </>
-              ) : (
-                <>
-                  <Moon size={15} className="text-indigo-600" />
-                  <span className="text-[11px]">Dark Mode</span>
-                </>
-              )}
-            </button>
-
+          {/* Action CTAs */}
+          <div className="flex items-center gap-3">
             <Link
               to="/login"
-              className={`rounded-xl border px-3.5 py-1.5 text-xs font-semibold backdrop-blur-md transition ${
-                isDark
-                  ? "border-white/10 bg-white/5 text-slate-200 hover:border-white/20 hover:bg-white/10 hover:text-white"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 shadow-sm"
-              }`}
+              className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-semibold text-slate-200 backdrop-blur-md transition hover:border-white/20 hover:bg-white/10 hover:text-white"
             >
               Sign In
             </Link>

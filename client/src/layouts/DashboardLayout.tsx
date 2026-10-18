@@ -2,7 +2,6 @@ import { useState, type ReactNode } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 import { Menu, X } from "lucide-react";
-import { useTheme } from "../context/ThemeContext";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -12,43 +11,18 @@ export default function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { isDark } = useTheme();
 
   return (
-    <div
-      className={`relative flex min-h-screen transition-colors duration-300 selection:bg-cyan-500 selection:text-white ${
-        isDark ? "bg-[#07090e] text-slate-100" : "bg-[#f8fafc] text-slate-900"
-      }`}
-    >
+    <div className="relative flex min-h-screen bg-[#07090e] text-slate-100 selection:bg-cyan-500 selection:text-white">
       {/* Ambient Animated Mesh & Glow Background */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div
-          className={`absolute inset-0 bg-grid-pattern transition-opacity duration-300 ${
-            isDark ? "opacity-25" : "opacity-15"
-          }`}
-        />
-        <div
-          className={`absolute inset-0 bg-radial-vignette transition-opacity duration-300 ${
-            isDark ? "opacity-100" : "opacity-40"
-          }`}
-        />
+        <div className="absolute inset-0 bg-grid-pattern opacity-25" />
+        <div className="absolute inset-0 bg-radial-vignette" />
 
         {/* Floating Glowing Orbs */}
-        <div
-          className={`animate-mesh-drift-1 absolute -top-32 left-1/4 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-cyan-500/15 via-blue-600/10 to-transparent blur-[120px] transition-opacity duration-300 ${
-            isDark ? "opacity-100" : "opacity-40"
-          }`}
-        />
-        <div
-          className={`animate-mesh-drift-2 absolute top-1/2 -right-20 h-[550px] w-[550px] rounded-full bg-gradient-to-bl from-indigo-500/15 via-purple-600/10 to-transparent blur-[130px] transition-opacity duration-300 ${
-            isDark ? "opacity-100" : "opacity-40"
-          }`}
-        />
-        <div
-          className={`animate-pulse-glow absolute -bottom-32 left-1/3 h-[450px] w-[450px] rounded-full bg-gradient-to-tr from-teal-500/10 via-cyan-600/10 to-transparent blur-[110px] transition-opacity duration-300 ${
-            isDark ? "opacity-100" : "opacity-30"
-          }`}
-        />
+        <div className="animate-mesh-drift-1 absolute -top-32 left-1/4 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-cyan-500/15 via-blue-600/10 to-transparent blur-[120px]" />
+        <div className="animate-mesh-drift-2 absolute top-1/2 -right-20 h-[550px] w-[550px] rounded-full bg-gradient-to-bl from-indigo-500/15 via-purple-600/10 to-transparent blur-[130px]" />
+        <div className="animate-pulse-glow absolute -bottom-32 left-1/3 h-[450px] w-[450px] rounded-full bg-gradient-to-tr from-teal-500/10 via-cyan-600/10 to-transparent blur-[110px]" />
       </div>
 
       {/* Mobile Sidebar Overlay */}

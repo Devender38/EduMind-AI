@@ -20,8 +20,6 @@ import {
   CheckCircle2,
   Lock,
   Loader2,
-  Sun,
-  Moon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -37,12 +35,10 @@ import {
 } from "../api/auth.api";
 import type { SessionItem, LoginHistoryItem } from "../api/auth.api";
 import { useAuthStore } from "../store/authStore";
-import { useTheme } from "../context/ThemeContext";
 
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { user, updateUser, logout } = useAuthStore();
-  const { isDark, setTheme } = useTheme();
 
   const [activeTab, setActiveTab] = useState<"system" | "security">("system");
 
@@ -248,73 +244,6 @@ export default function SettingsPage() {
         {/* TAB 1: SYSTEM PREFERENCES */}
         {activeTab === "system" && (
           <div className="space-y-6">
-            {/* Appearance & Theme Mode Card */}
-            <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-6 backdrop-blur-xl space-y-5">
-              <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
-                <Sun size={20} className="text-amber-400" />
-                <div>
-                  <h3 className="text-base font-bold text-white">Appearance & Theme Mode</h3>
-                  <p className="text-xs text-zinc-400">Choose between Day (Light Mode) and Night (Dark Mode)</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => setTheme("light")}
-                  className={`flex items-center gap-3.5 p-4 rounded-xl border text-left transition-all ${
-                    !isDark
-                      ? "border-amber-500 bg-amber-500/15 shadow-md shadow-amber-500/10 scale-[1.01]"
-                      : "border-zinc-800 bg-zinc-950/60 hover:border-zinc-700"
-                  }`}
-                >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
-                    <Sun size={22} />
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-white flex items-center gap-2">
-                      <span>Light Mode (Day ☀️)</span>
-                      {!isDark && (
-                        <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-300 font-semibold border border-amber-500/30">
-                          Active
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-zinc-400 mt-0.5">
-                      Clean, high-contrast, bright academic theme
-                    </p>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setTheme("dark")}
-                  className={`flex items-center gap-3.5 p-4 rounded-xl border text-left transition-all ${
-                    isDark
-                      ? "border-cyan-500 bg-cyan-500/15 shadow-md shadow-cyan-500/10 scale-[1.01]"
-                      : "border-zinc-800 bg-zinc-950/60 hover:border-zinc-700"
-                  }`}
-                >
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-500/20 text-cyan-400">
-                    <Moon size={22} />
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-white flex items-center gap-2">
-                      <span>Dark Mode (Night 🌙)</span>
-                      {isDark && (
-                        <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-[10px] text-cyan-300 font-semibold border border-cyan-500/30">
-                          Active
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-zinc-400 mt-0.5">
-                      Deep navy obsidian theme easy on the eyes
-                    </p>
-                  </div>
-                </button>
-              </div>
-            </div>
-
             {/* 1. Profile Photo & Appearance */}
             <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-6 backdrop-blur-xl space-y-5">
               <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
