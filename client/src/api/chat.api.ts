@@ -46,3 +46,28 @@ export const transcribeVoice = async (
   const response = await api.post("/chat/transcribe-voice", { audio, mimeType });
   return response.data?.text || "";
 };
+
+export interface VoiceTutorRequest {
+  question: string;
+  documentId?: string;
+  language?: string;
+  level?: "beginner" | "intermediate" | "advanced";
+  mode?: "explain" | "simplify" | "example" | "quiz" | "summarize" | "followup";
+  history?: Array<{ role: "user" | "assistant"; content: string }>;
+}
+
+export interface VoiceTutorResponse {
+  success: boolean;
+  answer: string;
+  sources: string[];
+  suggestedFollowups: string[];
+}
+
+export const askVoiceTutor = async (
+  payload: VoiceTutorRequest
+): Promise<VoiceTutorResponse> => {
+  const response = await api.post("/chat/voice-tutor", payload, {
+    timeout: 120000,
+  });
+  return response.data;
+};

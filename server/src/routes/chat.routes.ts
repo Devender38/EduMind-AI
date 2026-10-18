@@ -20,6 +20,12 @@ router.post(
   ChatController.transcribeVoice
 );
 
+router.post(
+  "/voice-tutor",
+  protect,
+  ChatController.voiceTutor
+);
+
 // High-reliability MP3 audio TTS stream
 router.get(
   "/tts",

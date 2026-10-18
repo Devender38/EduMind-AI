@@ -177,6 +177,22 @@ export interface AIAnswer {
   sources: string[];
 }
 
+export interface VoiceTutorOptions {
+  question: string;
+  documentId?: string | string[];
+  language?: string;
+  level?: "beginner" | "intermediate" | "advanced";
+  mode?: "explain" | "simplify" | "example" | "quiz" | "summarize" | "followup";
+  conversationHistory?: Array<{ role: "user" | "assistant"; content: string }>;
+}
+
+export interface AIVoiceTutorResult {
+  success: boolean;
+  answer: string;
+  sources: string[];
+  suggestedFollowups: string[];
+}
+
 async function getDocumentContext(
   documentId?: string | string[]
 ): Promise<string> {
@@ -434,6 +450,157 @@ Formatting Guidelines (ChatGPT Pattern):
         sources: docContext ? ["Uploaded Study Document"] : [],
       };
     }
+  }
+
+  /**
+   * Interactive Multilingual Pedagogical Voice Tutor
+   */
+  static async voiceTutor(options: VoiceTutorOptions): Promise<AIVoiceTutorResult> {
+    const startTime = Date.now();
+    const {
+      question,
+      documentId,
+      language = "en-US",
+      level = "beginner",
+      mode = "explain",
+      conversationHistory = [],
+    } = options;
+
+    logger.info(
+      `[POST /voice-tutor] Lang: ${language} | Level: ${level} | Mode: ${mode} | Query: "${question.substring(0, 60)}"`
+    );
+
+    const docContext = await getDocumentContext(documentId);
+
+    // Build language-specific instruction
+    const langKey = language.toLowerCase();
+    let languageInstruction = "Teach in clear, articulate, engaging, and encouraging English.";
+
+    if (langKey.includes("hinglish")) {
+      languageInstruction =
+        "Teach in sweet, natural, conversational Hinglish (Roman script Hindi e.g., 'Dosto, Machine Learning ka matlab hai jab computer data se khud seekhta hai bina explicit programming ke...'). Keep technical keywords, formulas, and code snippets in English for clarity.";
+    } else if (langKey.startsWith("hi")) {
+      languageInstruction =
+        "Teach in sweet, fluent, standard Hindi using Devanagari script (e.g., 'नमस्ते विद्यार्थी! आज हम इस विषय को गहराई से और सरलता से समझेंगे...'). Keep core technical keywords understandable.";
+    } else if (langKey.startsWith("bn")) {
+      languageInstruction =
+        "Teach in fluent, natural, grammatically correct Bengali (বাংলা). Use an encouraging pedagogical tone.";
+    } else if (langKey.startsWith("ta")) {
+      languageInstruction =
+        "Teach in fluent, natural, grammatically correct Tamil (தமிழ்). Use an encouraging pedagogical tone.";
+    } else if (langKey.startsWith("te")) {
+      languageInstruction =
+        "Teach in fluent, natural, grammatically correct Telugu (తెలుగు). Use an encouraging pedagogical tone.";
+    } else if (langKey.startsWith("mr")) {
+      languageInstruction =
+        "Teach in fluent, natural, grammatically correct Marathi (मराठी). Use an encouraging pedagogical tone.";
+    } else if (langKey.startsWith("es")) {
+      languageInstruction =
+        "Teach in fluent, natural, grammatically correct Spanish (Español). Use an encouraging pedagogical tone.";
+    } else if (langKey.startsWith("fr")) {
+      languageInstruction =
+        "Teach in fluent, natural, grammatically correct French (Français). Use an encouraging pedagogical tone.";
+    } else if (langKey.includes("in")) {
+      languageInstruction =
+        "Teach in clear, friendly Indian English, using relatable examples and encouraging tone.";
+    }
+
+    // Level instruction
+    let levelInstruction = "";
+    if (level === "beginner") {
+      levelInstruction =
+        "Student Level: BEGINNER. Explain concepts simply and patiently. Avoid overwhelming the student with heavy jargon without immediately breaking it down. Use daily life metaphors and simple analogies.";
+    } else if (level === "advanced") {
+      levelInstruction =
+        "Student Level: ADVANCED. Provide deep architectural rigor, performance trade-offs, internal mechanics, edge cases, and industry best practices. Maintain high intellectual depth.";
+    } else {
+      levelInstruction =
+        "Student Level: INTERMEDIATE. Balance clear conceptual intuition with practical implementation details, mechanisms, and common pitfalls.";
+    }
+
+    // Mode-specific instruction
+    let modeInstruction = "";
+    if (mode === "simplify") {
+      modeInstruction =
+        "FOCUS: EXPLAIN MUCH MORE SIMPLY. Break down this concept into 5th-grade level terms. Use a super intuitive everyday analogy and zero complex terminology.";
+    } else if (mode === "example") {
+      modeInstruction =
+        "FOCUS: PRACTICAL EXAMPLES. Provide 2 to 3 vivid, real-world, step-by-step practical examples connecting this topic directly to daily life or modern technology.";
+    } else if (mode === "quiz") {
+      modeInstruction =
+        "FOCUS: TEST MY UNDERSTANDING. Pose a thought-provoking, interactive quiz question (with 3-4 options A, B, C, D or a conceptual challenge) to test if the student truly grasped the core concept.";
+    } else if (mode === "summarize") {
+      modeInstruction =
+        "FOCUS: LESSON SUMMARY. Provide a crisp, bulleted revision cheat-sheet highlighting the core mechanics, key formulas/rules, and one golden takeaway.";
+    } else {
+      modeInstruction = `Follow this human teacher pedagogical structure:
+1. **Simple Introduction**: What does the topic mean in beginner-friendly language?
+2. **Why It Matters**: Purpose and real-world significance.
+3. **Step-by-Step Breakdown**: Logical progression from foundational to advanced.
+4. **Practical Examples & Analogies**: Intuitive, relatable everyday comparison.
+5. **Real-World Applications**: How industry and modern apps actually use this.
+6. **Code / Math (if applicable)**: Clean snippet with line-by-line explanation.
+7. **Quick Recap**: 2-3 key takeaways.
+8. **Understanding Check**: Ask ONE short, friendly check question at the very end to see if the student understood.`;
+    }
+
+    const documentGuidance = docContext
+      ? `\n\nSTUDENT'S UPLOADED STUDY MATERIAL:\n${docContext}\n\nRULES FOR UPLOADED MATERIAL:\n- Ground your explanations in this study material whenever relevant.\n- Distinguish material from their document from general knowledge.\n- If their document does not mention the topic, clearly state: "Your uploaded notes don't explicitly mention this, but here is how it works..."`
+      : "";
+
+    const systemPrompt = `You are EduMind AI Voice Tutor — a world-class, patient, enthusiastic, and inspiring human-like academic teacher.
+Your mission is to make learning crystal clear, interactive, and joyful.
+
+TEACHING STYLE:
+- Speak directly to the student ("You", "Let's look at", "Imagine that").
+- Speak with natural rhythm, warmth, and pedagogical enthusiasm.
+- Be structured: use clean Markdown with headings (###), bold key terms (**keyword**), bullet points, and code blocks with language tags.
+- Never output walls of unbroken text.
+- Do not claim that you cannot speak or listen; you are actively conducting an audio voice lesson.
+
+LANGUAGE REQUIREMENT:
+${languageInstruction}
+
+LEVEL ADAPTATION:
+${levelInstruction}
+
+LESSON FOCUS:
+${modeInstruction}
+${documentGuidance}`;
+
+    const messages: Array<{ role: string; content: string }> = [
+      { role: "system", content: systemPrompt },
+    ];
+
+    if (conversationHistory && conversationHistory.length > 0) {
+      const recentHistory = conversationHistory.slice(-4);
+      for (const turn of recentHistory) {
+        messages.push({
+          role: turn.role === "user" ? "user" : "assistant",
+          content: turn.content,
+        });
+      }
+    }
+
+    messages.push({ role: "user", content: question });
+
+    const answer = await callAIDirect(messages, false, 3);
+    const elapsed = Date.now() - startTime;
+    logger.info(`[POST /voice-tutor] Completed in ${elapsed}ms`);
+
+    const suggestedFollowups = [
+      "Explain this more simply",
+      "Give me another practical example",
+      "Test my understanding with a quiz",
+      "Summarize the key points",
+    ];
+
+    return {
+      success: true,
+      answer: answer || "Let's explore this topic together! What would you like to know?",
+      sources: docContext ? ["Uploaded Study Document"] : [],
+      suggestedFollowups,
+    };
   }
 
   /**

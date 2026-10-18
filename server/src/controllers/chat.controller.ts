@@ -201,10 +201,81 @@ export class ChatController {
     }
   }
 
+  static async voiceTutor(req: Request, res: Response) {
+    const startTime = Date.now();
+    try {
+      const {
+        question,
+        documentId,
+        language = "en-US",
+        level = "beginner",
+        mode = "explain",
+        history = [],
+      } = req.body;
+      const userId = (req as any).user?._id;
+
+      if (!question || !question.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "Topic or question is required",
+        });
+      }
+
+      logger.info(
+        `Voice tutor query: "${question.substring(0, 80)}" [${language} | ${level} | ${mode}]`
+      );
+
+      const result = await AIService.voiceTutor({
+        question: question.trim(),
+        documentId,
+        language,
+        level,
+        mode,
+        conversationHistory: history,
+      });
+
+      // Log activity
+      if (userId) {
+        await ActivityLog.create({
+          user: userId,
+          activityType: "voice_tutor",
+          title: `Voice Tutor: "${question.substring(0, 50)}${question.length > 50 ? "..." : ""}"`,
+          documentId:
+            documentId && mongoose.Types.ObjectId.isValid(documentId)
+              ? documentId
+              : undefined,
+          metadata: {
+            language,
+            level,
+            mode,
+            sourcesCount: result.sources.length,
+          },
+        }).catch((err) => logger.warn("Failed saving voice tutor activity log:", err));
+      }
+
+      const elapsed = Date.now() - startTime;
+      logger.info(`Voice tutor response generated in ${elapsed}ms`);
+
+      return res.status(200).json({
+        success: true,
+        answer: result.answer,
+        sources: result.sources,
+        suggestedFollowups: result.suggestedFollowups,
+      });
+    } catch (error: any) {
+      const elapsed = Date.now() - startTime;
+      logger.error(`Voice tutor error after ${elapsed}ms: ${error.message}`, error);
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Voice Tutor failed to respond",
+      });
+    }
+  }
+
   static async tts(req: Request, res: Response) {
     try {
       const rawText = ((req.query.text as string) || "").trim();
-      const lang = ((req.query.lang as string) || "en").slice(0, 5);
+      const lang = ((req.query.lang as string) || "en").slice(0, 10);
 
       if (!rawText) {
         return res.status(400).send("Text is required");
@@ -217,11 +288,16 @@ export class ChatController {
         .replace(/\s+/g, " ")
         .trim();
 
-      const targetLang = lang.startsWith("hi")
-        ? "hi"
-        : lang.toLowerCase().includes("in")
-        ? "en-IN"
-        : "en";
+      const langLower = lang.toLowerCase();
+      let targetLang = "en";
+      if (langLower.startsWith("hi") || langLower.includes("hinglish")) targetLang = "hi";
+      else if (langLower.startsWith("bn")) targetLang = "bn";
+      else if (langLower.startsWith("ta")) targetLang = "ta";
+      else if (langLower.startsWith("te")) targetLang = "te";
+      else if (langLower.startsWith("mr")) targetLang = "mr";
+      else if (langLower.startsWith("es")) targetLang = "es";
+      else if (langLower.startsWith("fr")) targetLang = "fr";
+      else if (langLower.includes("in")) targetLang = "en-IN";
 
       // Google translate_tts has a strict ~200 character limit per request.
       // Split into word-safe chunks of max 175 characters.
