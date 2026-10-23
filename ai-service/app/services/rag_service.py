@@ -177,7 +177,9 @@ Generate **High-Yield Exam Notes** based strictly on the uploaded document.
 
 CRITICAL FORMATTING RULES:
 - Never mix sections together; separate with '---'
-- Use clear visual headings (### ⚡, ### 🎯, ### ⚠️, ### 📝)
+- Use clear visual headings (### ⚡, ### 🗺️, ### 🎯, ### ⚠️, ### 📝)
+- MUST include a clean Visual Decision Tree / Architecture Diagram
+- MUST include a comparison table for exam traps
 - Formulas in backticks (\`equation\`)
 - Bullet points with bold titles (• **Concept**: Details)
 
@@ -193,20 +195,31 @@ CRITICAL FORMATTING RULES:
 
 ---
 
-### 🎯 2. High-Probability Exam Questions & Detailed Answers
+### 🗺️ 2. High-Yield Exam Architecture & Decision Tree
+\`\`\`
+[Problem / Question Type]
+      │
+      ├──▶ If Condition A: Apply [Formula 1 / Method A] ──▶ [Full Marks]
+      │
+      └──▶ If Condition B: Apply [Formula 2 / Method B] ──▶ [Full Marks]
+\`\`\`
+
+---
+
+### 🎯 3. High-Probability Exam Questions & Detailed Answers
 #### Q1: [Important Question]
 • **Model Answer**: [Point-wise model answer to score full marks]
 
 ---
 
-### ⚠️ 3. Common Exam Traps & Examiner Pitfalls
+### ⚠️ 4. Common Exam Traps & Examiner Pitfalls
 | Common Mistake | Why It's Wrong | Correct Exam Approach |
 | :--- | :--- | :--- |
 | **[Trap 1]** | [Explanation] | [Correct Approach] |
 
 ---
 
-### 📝 4. Rapid Recall Cheat Sheet
+### 📝 5. Rapid Recall Cheat Sheet
 • **Crucial Fact 1**: ...
 • **Crucial Fact 2**: ...
 
@@ -219,6 +232,7 @@ You are EduMind AI. Generate **Rapid Revision Notes** for fast active recall bas
 
 CRITICAL FORMATTING:
 - Separate topics with '---'
+- MUST include a Visual Diagram / Conceptual Flow
 - Markdown tables for comparisons
 - Bold bullet points
 
@@ -234,14 +248,23 @@ CRITICAL FORMATTING:
 
 ---
 
-### 🔄 2. Comparison Matrix
+### 🗺️ 2. Rapid Concept Flow & Memory Map
+\`\`\`
+┌──────────────────┐       ┌──────────────────┐       ┌──────────────────┐
+│   [Core Topic]   │ ────▶ │  [Key Mechanism] │ ────▶ │ [Target Outcome] │
+└──────────────────┘       └──────────────────┘       └──────────────────┘
+\`\`\`
+
+---
+
+### 🔄 3. Comparison Matrix
 | Concept A | Concept B | Core Distinction / Trade-off |
 | :--- | :--- | :--- |
 | **[Concept A]** | **[Concept B]** | [Main functional difference] |
 
 ---
 
-### 🧠 3. Active Recall Memory Test
+### 🧠 4. Active Recall Memory Test
 1. **[Question 1]** → *Hint: [Brief mnemonic/hint]*
 2. **[Question 2]** → *Hint: [Brief mnemonic/hint]*
 
@@ -261,6 +284,13 @@ You are EduMind AI. Generate a **Condensed One-Page Master Synthesis** synthesiz
 ### 🏛️ Foundational Pillars
 • **Pillar 1**: [Essential concept in 1 sentence]
 • **Pillar 2**: [Essential concept in 1 sentence]
+
+---
+
+### 🗺️ Master Execution Flow Diagram
+\`\`\`
+[Initial State] ──▶ [Core Formula / Transition] ──▶ [Steady State / Outcome]
+\`\`\`
 
 ---
 
@@ -294,6 +324,19 @@ You are EduMind AI. Generate comprehensive **Hierarchical Bullet-Point Notes** b
 
 ---
 
+### 🗺️ Concept Hierarchy & Architecture Diagram
+\`\`\`
+┌─────────────────────────────────┐
+│     [Main Subject / Theme]      │
+└──────────────┬──────────────────┘
+               │
+        ┌──────┴──────┐
+        ▼             ▼
+   [Branch 1]    [Branch 2]
+\`\`\`
+
+---
+
 ### 📌 1. [First Major Topic]
 • **Core Principle**: [Explanation]
   - Sub-concept: [Details]
@@ -303,6 +346,13 @@ You are EduMind AI. Generate comprehensive **Hierarchical Bullet-Point Notes** b
 ### 📌 2. [Second Major Topic]
 • **Core Principle**: [Explanation]
   - Sub-concept: [Details]
+
+---
+
+### 📊 3. Topic Summary & Rules Matrix
+| Topic Module | Primary Mechanism | Key Takeaway |
+| :--- | :--- | :--- |
+| **[Module 1]** | [Mechanism] | [Takeaway] |
 
 DOCUMENT CONTENT:
 {context[:22000]}
@@ -315,7 +365,8 @@ Generate elite, beautifully formatted, lecture-grade **Class Lecture Notes** bas
 CRITICAL FORMATTING & READABILITY RULES:
 - NEVER output a single giant wall of text. Everything must be organized into clear sections.
 - Separate every section with clean Markdown headings (## and ###) and thematic breaks (---).
-- Put key terminology and core definitions in a clean Markdown table with headers: | Term | Definition | Key Significance |.
+- Put key terminology and core definitions in a clean Markdown table with headers: | Term | Exact Definition | Practical Insight / Example |.
+- MUST include a clean Visual Flow Diagram / Architecture box illustrating the core workflow or relationships.
 - Use clean bullet points (•) and bold highlighting (**term**) for every key concept.
 - Highlight formulas and technical terms inside backticks (\`like this\`).
 
@@ -341,36 +392,55 @@ Follow this exact structure:
 
 ---
 
-### 3. 🧠 Comprehensive Lecture Breakdown & Mechanisms
-#### 3.1 [First Major Concept]
+### 3. 🗺️ Concept Workflow & Architectural Diagram
+\`\`\`
+┌─────────────────────────────────────────┐
+│        [Stage 1: Input / Origin]        │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│     [Stage 2: Core Processing / Logic]  │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│        [Stage 3: Output / Result]       │
+└─────────────────────────────────────────┘
+\`\`\`
+
+---
+
+### 4. 🧠 Comprehensive Lecture Breakdown & Mechanisms
+#### 4.1 [First Major Concept]
 • **Core Principle**: ...
 • **How It Works**: ...
 
-#### 3.2 [Second Major Concept]
+#### 4.2 [Second Major Concept]
 • **Core Principle**: ...
 • **How It Works**: ...
 
 ---
 
-### 4. ⚡ Formulas, Laws & Governing Rules
+### 5. ⚡ Formulas, Laws & Governing Rules
 • **Formula / Law**: \`[Equation or Rule]\`
 • **When to Apply**: ...
 
 ---
 
-### 5. 💡 Real-World Examples & Intuitive Analogies
+### 6. 💡 Real-World Examples & Intuitive Analogies
 • **Real-World Case**: [Practical concrete example]
 • **Memory Analogy**: [A simple, vivid real-world analogy]
 
 ---
 
-### 6. ⚠️ Common Misconceptions & Student Traps
+### 7. ⚠️ Common Misconceptions & Student Traps
 • **Common Mistake**: [What students frequently confuse]
   - **The Truth**: [Why that is wrong and how to think about it correctly]
 
 ---
 
-### 7. 📝 Rapid Recall & Practice Questions
+### 8. 📝 Rapid Recall & Practice Questions
 1. [Self-test question 1 to check understanding]
 2. [Self-test question 2 to check understanding]
 

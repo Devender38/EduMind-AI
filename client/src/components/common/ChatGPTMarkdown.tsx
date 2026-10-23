@@ -1,8 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useId } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Check, Copy, Terminal } from "lucide-react";
+import { Check, Copy, Terminal, Workflow } from "lucide-react";
 import toast from "react-hot-toast";
+import mermaid from "mermaid";
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: "dark",
+  themeVariables: {
+    darkMode: true,
+    background: "#020617",
+    primaryColor: "#0891b2",
+    primaryTextColor: "#f8fafc",
+    primaryBorderColor: "#22d3ee",
+    lineColor: "#38bdf8",
+    secondaryColor: "#0f172a",
+    tertiaryColor: "#1e293b",
+  },
+  securityLevel: "loose",
+});
 
 interface ChatGPTMarkdownProps {
   content: string;
@@ -123,6 +140,12 @@ export const ChatGPTMarkdown: React.FC<ChatGPTMarkdownProps> = ({
               );
             }
 
+            const lang = className ? className.replace("language-", "").toLowerCase() : "";
+
+            if (lang === "mermaid") {
+              return <MermaidBlock chart={rawString} />;
+            }
+
             return <CodeBlock rawString={rawString} className={className} />;
           },
         }}
@@ -133,17 +156,72 @@ export const ChatGPTMarkdown: React.FC<ChatGPTMarkdownProps> = ({
   );
 };
 
+const MermaidBlock: React.FC<{ chart: string }> = ({ chart }) => {
+  const [svg, setSvg] = useState<string>("");
+  const [hasError, setHasError] = useState(false);
+  const rawId = useId().replace(/[^a-zA-Z0-9]/g, "");
+
+  useEffect(() => {
+    let isMounted = true;
+    const renderChart = async () => {
+      try {
+        const uniqueId = `mermaid_${rawId}_${Math.random().toString(36).substring(2, 7)}`;
+        const { svg: renderedSvg } = await mermaid.render(uniqueId, chart);
+        if (isMounted) {
+          setSvg(renderedSvg);
+          setHasError(false);
+        }
+      } catch {
+        if (isMounted) {
+          setHasError(true);
+        }
+      }
+    };
+    renderChart();
+    return () => {
+      isMounted = false;
+    };
+  }, [chart, rawId]);
+
+  if (hasError || !svg) {
+    return <CodeBlock rawString={chart} className="language-mermaid" />;
+  }
+
+  return (
+    <div className="my-4 overflow-hidden rounded-2xl border border-cyan-500/25 bg-slate-950 p-4 shadow-xl">
+      <div className="mb-3 flex items-center justify-between border-b border-white/10 pb-2.5 text-xs font-semibold text-cyan-400">
+        <div className="flex items-center gap-1.5">
+          <Workflow size={14} />
+          <span>Visual Workflow Diagram</span>
+        </div>
+      </div>
+      <div
+        className="flex justify-center overflow-x-auto py-2 [&>svg]:max-w-full [&>svg]:h-auto"
+        dangerouslySetInnerHTML={{ __html: svg }}
+      />
+    </div>
+  );
+};
+
 const CodeBlock: React.FC<{ rawString: string; className?: string }> = ({
   rawString,
   className,
 }) => {
   const [copied, setCopied] = useState(false);
-  const lang = className ? className.replace("language-", "") : "code";
+  const lang = className ? className.replace("language-", "").toLowerCase() : "code";
+  const isDiagram =
+    lang === "diagram" ||
+    lang === "flowchart" ||
+    lang === "ascii" ||
+    rawString.includes("┌") ||
+    rawString.includes("└──") ||
+    rawString.includes("──▶") ||
+    rawString.includes("-->");
 
   const handleCopy = () => {
     navigator.clipboard.writeText(rawString);
     setCopied(true);
-    toast.success("Code copied!");
+    toast.success(isDiagram ? "Diagram copied!" : "Code copied!");
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -151,8 +229,8 @@ const CodeBlock: React.FC<{ rawString: string; className?: string }> = ({
     <div>
       <div className="flex items-center justify-between bg-slate-900/90 px-4 py-2 text-xs text-slate-400 border-b border-white/10 font-mono">
         <div className="flex items-center gap-1.5 text-cyan-400 font-semibold">
-          <Terminal size={13} />
-          <span>{lang}</span>
+          {isDiagram ? <Workflow size={13} /> : <Terminal size={13} />}
+          <span>{isDiagram ? "Visual Diagram / Architecture" : lang}</span>
         </div>
         <button
           type="button"
@@ -172,7 +250,11 @@ const CodeBlock: React.FC<{ rawString: string; className?: string }> = ({
           )}
         </button>
       </div>
-      <div className="overflow-x-auto p-4 text-xs sm:text-sm font-mono text-slate-200 leading-relaxed">
+      <div
+        className={`overflow-x-auto p-4 text-xs sm:text-sm font-mono leading-relaxed ${
+          isDiagram ? "text-cyan-200 bg-slate-950/90 font-medium whitespace-pre" : "text-slate-200"
+        }`}
+      >
         <code>{rawString}</code>
       </div>
     </div>

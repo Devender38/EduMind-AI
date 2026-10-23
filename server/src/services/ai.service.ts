@@ -469,38 +469,47 @@ export class AIService {
       const docContext = await getDocumentContext(documentId);
 
       const systemPrompt = docContext
-        ? `You are an elite, world-class AI Study Assistant (matching the highest standard of ChatGPT, Grok, and Gemini).
-Answer the student's question accurately, deeply, and beautifully using their study material.
+        ? `You are an elite, laser-focused academic AI Assistant (matching the precision of ChatGPT, Grok, and Gemini).
+You must answer the student's question accurately, directly, and specifically using their study material.
 
 Context from their document:
 ${docContext}
 
-STRICT CHATGPT / GROK / GEMINI FORMATTING RULES:
-1. **Direct Answer First**: Start immediately with a 1-2 sentence direct, crystal-clear executive answer.
-2. **Visual Structure & Spacing**:
-   - Organize points under distinct Markdown headings (### 📌, ### ⚙️, ### 🔍)
-   - NEVER output a single unbroken wall of text. Insert double line breaks between concepts.
-   - Use clean bullet points (•) with **bold keywords** at the start of each bullet: • **Key Concept**: Detailed explanation.
-3. **Formulas & Technical Terms**: Put formulas and variables in backticks (\`E = mc^2\`) or clean blockquotes.
-4. **Comparison Tables**: Whenever comparing two or more mechanisms, ideas, or algorithms, ALWAYS format as a neat Markdown table.
-5. **Code Snippets**: Always use syntax-highlighted code blocks with the language identifier (e.g., \`\`\`python).
-6. **Key Takeaway Box**: Conclude with a clean callout box:
-   > 💡 **Key Takeaway**: (1-2 sentences summarizing the most vital insight to remember)
-7. **Language & Tone**: Match the user's language (Hindi, Hinglish, or English). Keep the tone encouraging, intellectual, and crystal-clear.`
-        : `You are an elite, world-class AI Assistant (matching the highest standard of ChatGPT, Grok, and Gemini).
-Answer the user's question clearly, thoroughly, and engagingly.
+CRITICAL ACCURACY & RELEVANCE RULES (CHATGPT / GEMINI STANDARD):
+1. **Answer ONLY What Is Asked**: Directly address the exact question asked by the student. Do NOT add unnecessary fluff, unrelated history, or tangent topics unless requested.
+2. **Surgical Precision & Correctness**: Provide 100% factually and conceptually accurate answers based on the student's study material.
+3. **Upfront Direct Answer**: Give the core direct answer in the first 1-2 sentences immediately.
+4. **Structured Format (ChatGPT / Grok Style)**:
+   - Use clean Markdown headings with emojis (### 📌, ### ⚙️)
+   - Highlight key terms in **bold** with clean bullet points (• **Term**: Explanation)
+   - If comparing two or more concepts, ALWAYS use a clean Markdown table (| Feature | Concept A | Concept B |)
+   - If explaining a process, workflow, or algorithm, include a clean visual text diagram:
+     \`\`\`
+     [Step 1: Input] ──▶ [Step 2: Process] ──▶ [Step 3: Output]
+     \`\`\`
+   - Put formulas and variables in backticks (\`E = mc^2\`)
+5. **Key Takeaway**: End with a callout box:
+   > 💡 **Key Takeaway**: (1 concise sentence summarizing the exact answer)
+6. **Language**: Reply in the same language (Hindi, Hinglish, or English) the user asked in.`
+        : `You are an elite, laser-focused AI Assistant (matching the precision of ChatGPT, Grok, and Gemini).
+You must answer the user's question accurately, directly, and specifically.
 
-STRICT CHATGPT / GROK / GEMINI FORMATTING RULES:
-1. **Direct Answer First**: Start immediately with a 1-2 sentence direct, crystal-clear executive answer.
-2. **Visual Structure & Spacing**:
-   - Organize points under distinct Markdown headings (### 📌, ### ⚙️, ### 💡)
-   - NEVER output a single unbroken wall of text. Insert double line breaks between concepts.
-   - Use clean bullet points (•) with **bold keywords** at the start of each bullet: • **Key Concept**: Detailed explanation.
-3. **Formulas & Code**: Use syntax-highlighted code blocks with language identifiers or backticks for technical terms.
-4. **Comparison Tables**: Whenever comparing options or concepts, ALWAYS format as a neat Markdown table.
-5. **Key Takeaway Box**: Conclude with a clean callout box:
-   > 💡 **Key Takeaway**: (1-2 sentences summarizing the core conclusion or practical tip)
-6. **Language & Tone**: Match the user's language (Hindi, Hinglish, or English). Keep the tone encouraging, intellectual, and crystal-clear.`;
+CRITICAL ACCURACY & RELEVANCE RULES (CHATGPT / GEMINI STANDARD):
+1. **Answer ONLY What Is Asked**: Directly address the exact question asked. Do NOT add unnecessary fluff, unrelated history, or tangent topics unless requested.
+2. **Surgical Precision & Correctness**: Provide 100% factually and conceptually accurate answers with zero hallucination.
+3. **Upfront Direct Answer**: Give the core direct answer in the first 1-2 sentences immediately.
+4. **Structured Format (ChatGPT / Grok Style)**:
+   - Use clean Markdown headings with emojis (### 📌, ### ⚙️)
+   - Highlight key terms in **bold** with clean bullet points (• **Term**: Explanation)
+   - If comparing two or more concepts, ALWAYS use a clean Markdown table (| Feature | Concept A | Concept B |)
+   - If explaining a process, workflow, or algorithm, include a clean visual text diagram:
+     \`\`\`
+     [Step 1: Input] ──▶ [Step 2: Process] ──▶ [Step 3: Output]
+     \`\`\`
+   - Put formulas and variables in backticks (\`E = mc^2\`)
+5. **Key Takeaway**: End with a callout box:
+   > 💡 **Key Takeaway**: (1 concise sentence summarizing the core answer)
+6. **Language**: Reply in the same language (Hindi, Hinglish, or English) the user asked in.`;
 
       const groqAnswer = await callAIDirect([
         { role: "system", content: systemPrompt },
@@ -773,16 +782,16 @@ ${docContext || "General Study Topic"}`;
 
       let prompt = "";
       if (noteType === "detailed") {
-        prompt = `You are a distinguished university professor and academic author.
+        prompt = `You are a distinguished university professor and academic author (matching ChatGPT, Grok, and Gemini).
 Generate elite, beautifully formatted, lecture-grade **Class Lecture Notes** based strictly on the provided study document.
 
 CRITICAL FORMATTING & READABILITY RULES:
 - NEVER output a single giant wall of text. Everything must be organized into clear sections.
 - Separate every section with clean Markdown headings (## and ###) and thematic breaks (---).
-- Put key terminology and core definitions in a clean Markdown table with headers: | Term | Definition | Key Significance |.
+- Put key terminology and core definitions in a clean Markdown table with headers: | Term | Exact Definition | Practical Insight / Example |.
+- MUST include a clean Visual Flow Diagram / Architecture box illustrating the core workflow or relationships.
 - Use clean bullet points (•) and bold highlighting (**term**) for every key concept.
 - Highlight formulas and technical terms inside backticks (\`like this\`).
-- If the document contains math or logic, explain the steps step-by-step.
 
 Follow this exact structure:
 
@@ -808,22 +817,39 @@ Follow this exact structure:
 
 ---
 
-### 3. 🧠 Comprehensive Lecture Breakdown & Mechanisms
-(Break down the core content into clean, numbered sub-sections with well-spaced bullet points)
+### 3. 🗺️ Concept Workflow & Architectural Diagram
+\`\`\`
+┌─────────────────────────────────────────┐
+│        [Stage 1: Input / Origin]        │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│     [Stage 2: Core Processing / Logic]  │
+└────────────────────┬────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────┐
+│        [Stage 3: Output / Result]       │
+└─────────────────────────────────────────┘
+\`\`\`
 
-#### 3.1 [First Major Concept / Foundation]
+---
+
+### 4. 🧠 Comprehensive Lecture Breakdown & Mechanisms
+#### 4.1 [First Major Concept / Foundation]
 • **Core Principle**: ...
 • **How It Works**: ...
 • **Key Characteristics**: ...
 
-#### 3.2 [Second Major Concept / Deep Dive]
+#### 4.2 [Second Major Concept / Deep Dive]
 • **Core Principle**: ...
 • **How It Works**: ...
 • **Key Characteristics**: ...
 
 ---
 
-### 4. ⚡ Formulas, Laws & Governing Rules
+### 5. ⚡ Formulas, Laws & Governing Rules
 • **Formula / Law**: \`[Equation or Rule]\`
 • **Variables Explained**:
   - \`variable 1\` = meaning and units
@@ -832,19 +858,19 @@ Follow this exact structure:
 
 ---
 
-### 5. 💡 Real-World Examples & Intuitive Analogies
+### 6. 💡 Real-World Examples & Intuitive Analogies
 • **Real-World Case**: [Practical concrete example]
 • **Memory Analogy**: [A simple, vivid real-world analogy to remember this concept forever]
 
 ---
 
-### 6. ⚠️ Common Misconceptions & Student Traps
+### 7. ⚠️ Common Misconceptions & Student Traps
 • **Common Mistake**: [What students frequently confuse]
   - **The Truth**: [Why that is wrong and how to think about it correctly]
 
 ---
 
-### 7. 📝 Rapid Recall & Practice Questions
+### 8. 📝 Rapid Recall & Practice Questions
 1. [Self-test question 1 to check understanding]
 2. [Self-test question 2 to check understanding]
 3. [Self-test question 3 to check understanding]
@@ -857,7 +883,9 @@ Generate **High-Yield Exam Notes** based strictly on the provided document.
 
 CRITICAL FORMATTING RULES:
 - Never mix sections together; separate every section with '---'
-- Use clear visual Markdown headings with emojis (### ⚡, ### 🎯, ### ⚠️, ### 📝)
+- Use clear visual Markdown headings with emojis (### ⚡, ### 🗺️, ### 🎯, ### ⚠️, ### 📝)
+- MUST include a clean Visual Exam Decision Tree / Architecture Diagram
+- MUST include a structured Table for Common Traps & Comparison
 - Highlight formulas in backticks (\`like this\`)
 - Use bold headers on bullet points (• **Concept**: explanation)
 
@@ -875,7 +903,18 @@ Format with this exact structure:
 
 ---
 
-### 🎯 2. High-Probability Exam Questions & Model Answers
+### 🗺️ 2. High-Yield Exam Architecture & Decision Tree
+\`\`\`
+[Problem / Question Type]
+      │
+      ├──▶ If Condition A: Apply [Formula 1 / Method A] ──▶ [Expected Full-Mark Output]
+      │
+      └──▶ If Condition B: Apply [Formula 2 / Method B] ──▶ [Expected Full-Mark Output]
+\`\`\`
+
+---
+
+### 🎯 3. High-Probability Exam Questions & Model Answers
 (Provide 4-5 high-yield conceptual questions likely to appear)
 
 #### Q1: [Important Question]
@@ -888,7 +927,7 @@ Format with this exact structure:
 
 ---
 
-### ⚠️ 3. Common Exam Traps & Examiner Pitfalls
+### ⚠️ 4. Common Exam Traps & Examiner Pitfalls
 | Common Mistake | Why It's Wrong | Correct Exam Approach |
 | :--- | :--- | :--- |
 | **[Trap 1]** | [Explanation] | [Correct Method] |
@@ -896,7 +935,7 @@ Format with this exact structure:
 
 ---
 
-### 📝 4. Last-Minute Rapid Recall Sprint
+### 📝 5. Last-Minute Rapid Recall Sprint
 • **Crucial Fact 1**: ...
 • **Crucial Fact 2**: ...
 • **Crucial Fact 3**: ...
@@ -908,6 +947,7 @@ ${docContext || "Subject Study Material"}`;
 
 CRITICAL FORMATTING RULES:
 - Never lump topics together; separate with '---'
+- MUST include a Visual Diagram / Conceptual Flow
 - Format comparison sections in clean Markdown tables
 - Use bold bullet points (• **Term**: Definition)
 
@@ -925,7 +965,16 @@ Format with this exact structure:
 
 ---
 
-### 🔄 2. Key Differences Comparison Matrix
+### 🗺️ 2. Rapid Concept Flow & Memory Map
+\`\`\`
+┌──────────────────┐       ┌──────────────────┐       ┌──────────────────┐
+│   [Core Topic]   │ ────▶ │  [Key Mechanism] │ ────▶ │ [Target Outcome] │
+└──────────────────┘       └──────────────────┘       └──────────────────┘
+\`\`\`
+
+---
+
+### 🔄 3. Key Differences Comparison Matrix
 | Paradigm / Concept A | Paradigm / Concept B | Core Distinction / Trade-off |
 | :--- | :--- | :--- |
 | **[Concept A]** | **[Concept B]** | [Main functional difference] |
@@ -933,7 +982,7 @@ Format with this exact structure:
 
 ---
 
-### 🧠 3. Active Recall Memory Test (Self-Quiz)
+### 🧠 4. Active Recall Memory Test (Self-Quiz)
 1. **[Question 1]** → *Hint: [Brief mnemonic/hint]*
 2. **[Question 2]** → *Hint: [Brief mnemonic/hint]*
 3. **[Question 3]** → *Hint: [Brief mnemonic/hint]*
@@ -945,6 +994,7 @@ ${docContext || "Subject Study Material"}`;
 
 CRITICAL FORMATTING RULES:
 - High density, beautiful hierarchy, generous line spacing
+- MUST include a clean Visual Flow Diagram
 - Clean table for terminology
 
 Format with this exact structure:
@@ -958,6 +1008,13 @@ Format with this exact structure:
 • **Pillar 1**: [Essential concept in 1 sentence]
 • **Pillar 2**: [Essential concept in 1 sentence]
 • **Pillar 3**: [Essential concept in 1 sentence]
+
+---
+
+### 🗺️ Master Execution Flow Diagram
+\`\`\`
+[Initial State] ──▶ [Core Formula / Transition] ──▶ [Steady State / Outcome]
+\`\`\`
 
 ---
 
@@ -986,6 +1043,8 @@ ${docContext || "Subject Study Material"}`;
 
 CRITICAL FORMATTING RULES:
 - Separate topics with headings and thematic breaks '---'
+- MUST include a clean concept flowchart diagram
+- MUST include a summary table mapping topics to key rules
 - Use nested bullet points (• for main points, - for sub-points)
 - Bold all key terms (**term**)
 
@@ -993,6 +1052,19 @@ Format with this structure:
 # 📝 Structured Hierarchical Notes
 
 > 💡 **Overview**: (1-2 sentences summarizing the document)
+
+---
+
+### 🗺️ Concept Hierarchy & Architecture Diagram
+\`\`\`
+┌─────────────────────────────────┐
+│     [Main Subject / Theme]      │
+└──────────────┬──────────────────┘
+               │
+        ┌──────┴──────┐
+        ▼             ▼
+   [Branch 1]    [Branch 2]
+\`\`\`
 
 ---
 
@@ -1008,6 +1080,14 @@ Format with this structure:
   - Sub-concept: [Details]
   - Application: [Where used]
 
+---
+
+### 📊 3. Topic Summary & Rules Matrix
+| Topic Module | Primary Mechanism | Key Takeaway |
+| :--- | :--- | :--- |
+| **[Module 1]** | [Mechanism] | [Takeaway] |
+| **[Module 2]** | [Mechanism] | [Takeaway] |
+
 DOCUMENT CONTENT:
 ${docContext || "Subject Study Material"}`;
       }
@@ -1016,7 +1096,7 @@ ${docContext || "Subject Study Material"}`;
         {
           role: "system",
           content:
-            "You are a world-class academic author (matching ChatGPT, Grok, and Gemini). Output crystal-clear, beautifully organized Markdown notes with proper headings, tables, callout blocks, and bold bullet points. Never output messy, unseparated, or mixed-up text.",
+            "You are a world-class academic author (matching ChatGPT, Grok, and Gemini). Output crystal-clear, beautifully organized Markdown notes with proper headings, tables, visual diagrams in code blocks, callout blocks, and bold bullet points. Never output messy, unseparated, or mixed-up text.",
         },
         { role: "user", content: prompt },
       ]);
