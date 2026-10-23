@@ -21,6 +21,7 @@
         "@types/multer": "^2.2.0",
         "@types/node": "^24.0.0",
         "@types/nodemailer": "^8.0.1",
+        "@types/pdf-parse": "^1.1.5",
         "axios": "^1.19.0",
         "bcrypt": "^6.0.0",
         "cloudinary": "^2.10.0",
@@ -36,6 +37,7 @@
         "morgan": "^1.11.0",
         "multer": "^2.2.0",
         "nodemailer": "^9.0.5",
+        "pdf-parse": "^1.1.1",
         "socket.io": "^4.8.1",
         "streamifier": "^0.1.1",
         "typescript": "^5.8.3"

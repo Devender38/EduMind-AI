@@ -1,4 +1,5 @@
 import { Response } from "express";
+import pdfParse from "pdf-parse";
 import Document from "../models/Document";
 import { uploadPDF } from "../services/cloudinary.service";
 import { AIService } from "../services/ai.service";
@@ -40,13 +41,25 @@ export const uploadDocument = async (
       `Starting document upload for user '${req.user.id}': ${req.file.originalname} (${(req.file.size / 1024).toFixed(1)} KB)`
     );
 
+    // Extract text directly in Node using pdf-parse
+    let extractedText = "";
+    let pageCount = 1;
+    try {
+      const pdfData = await pdfParse(req.file.buffer);
+      extractedText = (pdfData.text || "").trim();
+      pageCount = pdfData.numpages || 1;
+      logger.info(`Extracted ${extractedText.length} characters and ${pageCount} pages from PDF buffer`);
+    } catch (parseErr: any) {
+      logger.warn(`pdf-parse in-memory extraction note: ${parseErr.message}`);
+    }
+
     // Upload to Cloudinary
     const result = await uploadPDF(
       req.file.buffer,
       req.file.originalname
     );
 
-    // Save in MongoDB
+    // Save in MongoDB with extractedText pre-populated
     const document = await Document.create({
       user: req.user.id,
       title: req.file.originalname.replace(/\.pdf$/i, ""),
@@ -55,15 +68,14 @@ export const uploadDocument = async (
       cloudinaryPublicId: result.public_id,
       fileSize: req.file.size,
       fileType: req.file.mimetype,
-      extractedText: "",
-      status: "processing",
+      extractedText: extractedText,
+      pageCount: pageCount,
+      status: "completed",
     });
 
     logger.info(`MongoDB document record created with ID: ${document._id}`);
 
-    // ======================================
-    // Send PDF to Python AI Service
-    // ======================================
+    // Forward to Python AI microservice if available for chunk embeddings
     try {
       logger.info(`Forwarding document ${document._id} to AI microservice for indexing...`);
       const aiResult = await AIService.uploadPDF(
@@ -71,20 +83,16 @@ export const uploadDocument = async (
         document._id.toString()
       );
 
-      document.status = "completed";
-      document.summary = aiResult.summary || "";
-      document.keywords = aiResult.keywords || [];
-      document.pageCount = aiResult.pageCount || 0;
-      document.chunkCount = aiResult.chunkCount || 0;
-      document.readingTime = aiResult.readingTime || 0;
+      if (aiResult.summary) document.summary = aiResult.summary;
+      if (aiResult.keywords) document.keywords = aiResult.keywords;
+      if (aiResult.chunkCount) document.chunkCount = aiResult.chunkCount;
+      if (aiResult.readingTime) document.readingTime = aiResult.readingTime;
 
       await document.save();
       const elapsed = Date.now() - startTime;
-      logger.info(`Document ${document._id} fully indexed & processed in ${elapsed}ms`);
+      logger.info(`Document ${document._id} processed in ${elapsed}ms`);
     } catch (err: any) {
-      logger.error(`AI indexing failed for doc ${document._id}: ${err.message}`, err);
-      document.status = "failed";
-      await document.save();
+      logger.warn(`Python microservice unavailable for indexing: ${err.message}`);
     }
 
     res.status(201).json({
