@@ -143,7 +143,10 @@ export class ChatController {
 
       const apiKey = process.env.OPENROUTER_API_KEY || "";
       if (!apiKey) {
-        return res.status(500).json({ success: false, message: "AI API key missing" });
+        return res.status(500).json({
+          success: false,
+          message: "OPENROUTER_API_KEY is not configured in Render environment variables.",
+        });
       }
 
       const audioMime = mimeType || "audio/webm";

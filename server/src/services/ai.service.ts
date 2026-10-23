@@ -6,7 +6,7 @@ const logger = createLogger("AIServiceClient");
 
 const AI_BASE_URL = process.env.AI_SERVICE_URL || "http://127.0.0.1:8000";
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
-const OPENROUTER_MODEL = process.env.MODEL_NAME || "mistralai/mistral-7b-instruct:free";
+const OPENROUTER_MODEL = process.env.MODEL_NAME || "openrouter/free";
 
 // =============================
 // Interfaces
@@ -94,11 +94,11 @@ export interface AISemanticSearch {
 // =============================
 
 const FREE_FALLBACK_MODELS = [
-  "google/gemini-2.5-flash",
-  "google/gemini-2.5-flash-lite",
-  "google/gemini-3.5-flash-lite",
-  "deepseek/deepseek-v4-flash-0731:free",
+  "openrouter/free",
   "liquid/lfm-2.5-2.6b:free",
+  "google/gemma-4-26b-a4b-it:free",
+  "nvidia/nemotron-3.5-lightning:free",
+  "google/gemini-2.5-flash",
 ];
 
 async function callAIDirect(
@@ -107,21 +107,24 @@ async function callAIDirect(
   retries: number = 3,
   modelIndex: number = 0
 ): Promise<string> {
-  const envModel = process.env.MODEL_NAME || "google/gemini-2.5-flash";
+  const envModel = process.env.MODEL_NAME || "openrouter/free";
   const modelsToTry = [envModel, ...FREE_FALLBACK_MODELS.filter((m) => m !== envModel)];
   const selectedModel = modelsToTry[modelIndex] || modelsToTry[0];
 
   try {
     const apiKey = process.env.OPENROUTER_API_KEY || OPENROUTER_API_KEY;
     if (!apiKey) {
-      throw new Error("OPENROUTER_API_KEY is not defined in .env file");
+      logger.error(
+        "OPENROUTER_API_KEY is not defined in environment variables."
+      );
+      return "⚠️ AI service is not configured yet. Please add `OPENROUTER_API_KEY` in your Render Dashboard (Environment tab) to enable live answers.";
     }
 
     const payload: any = {
       model: selectedModel,
       messages,
       temperature: jsonMode ? 0.1 : 0.5,
-      max_tokens: jsonMode ? 3000 : 2500,
+      max_tokens: jsonMode ? 2000 : 1500,
     };
 
     const response = await axios.post(
@@ -138,7 +141,8 @@ async function callAIDirect(
       }
     );
 
-    return response.data?.choices?.[0]?.message?.content || "";
+    const msg = response.data?.choices?.[0]?.message;
+    return msg?.content || msg?.text || msg?.reasoning || "";
   } catch (error: any) {
     const status = error.response?.status;
     const isModelUnavailable = status === 404 || status === 400 || status === 402;
