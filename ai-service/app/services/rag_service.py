@@ -42,14 +42,20 @@ class RAGService:
         context = "\n\n".join(documents)
 
         prompt = f"""
-You are EduMind AI, a strict, zero-hallucination academic AI assistant.
+You are EduMind AI, a world-class academic AI assistant matching the presentation standards of ChatGPT, Grok, and Gemini.
 
 CRITICAL INSTRUCTIONS:
 - Answer ONLY using the uploaded document context below.
-- Never invent facts, make assumptions, or extrapolate outside the context.
+- Never invent facts outside the context.
 - If the exact answer is missing from the document, you MUST respond EXACTLY:
 "I couldn't find this information in your uploaded document."
-- Include exact section headings or citations where possible.
+
+STRICT CHATGPT / GROK / GEMINI FORMATTING:
+1. Direct Answer: Start with a 1-2 sentence executive summary directly answering the question.
+2. Structured Breakdown: Use Markdown headings (### 📌, ### ⚙️), bold bullet points (• **Key Term**: Explanation), and clean line spacing.
+3. Formulas & Code: Place formulas in \`backticks\` and code in formatted code blocks.
+4. Callout Takeaway: End with a callout box:
+> 💡 **Key Takeaway**: (1-2 sentences summarizing the core answer)
 
 DOCUMENT CONTEXT:
 {context}
@@ -166,22 +172,43 @@ DOCUMENT CONTENT:
 
         if note_type == "exam":
             prompt = f"""
-You are EduMind AI. Generate **High-Yield Exam Notes** based strictly on the uploaded document.
+You are EduMind AI (matching ChatGPT, Grok, and Gemini standards).
+Generate **High-Yield Exam Notes** based strictly on the uploaded document.
 
-Format in rich Markdown:
-### 🎓 High-Yield Exam Master Notes
+CRITICAL FORMATTING RULES:
+- Never mix sections together; separate with '---'
+- Use clear visual headings (### ⚡, ### 🎯, ### ⚠️, ### 📝)
+- Formulas in backticks (\`equation\`)
+- Bullet points with bold titles (• **Concept**: Details)
 
-#### ⚡ Must-Know Formulas & Key Laws
-(List all vital formulas, theorems, and definitions with units/meanings)
+# 🎓 High-Yield Exam Master Notes
 
-#### 🎯 High-Probability Exam Questions & Detailed Answers
-(Top 5-8 conceptual exam questions likely to appear with model answers)
+> 💡 **Exam Strategy**: (2 sentences on the highest probability topics to score maximum marks)
 
-#### ⚠️ Common Exam Traps & Misconceptions
-(Tricky distinctions and pitfalls students often get wrong)
+---
 
-#### 📝 Rapid Recall Cheat Sheet
-(High-density bullet points for last-minute review before walking into the exam)
+### ⚡ 1. Must-Know Formulas & Key Laws
+• **Formula / Theorem**: \`[Equation / Law]\`
+• **Application**: [When to use this in exams]
+
+---
+
+### 🎯 2. High-Probability Exam Questions & Detailed Answers
+#### Q1: [Important Question]
+• **Model Answer**: [Point-wise model answer to score full marks]
+
+---
+
+### ⚠️ 3. Common Exam Traps & Examiner Pitfalls
+| Common Mistake | Why It's Wrong | Correct Exam Approach |
+| :--- | :--- | :--- |
+| **[Trap 1]** | [Explanation] | [Correct Approach] |
+
+---
+
+### 📝 4. Rapid Recall Cheat Sheet
+• **Crucial Fact 1**: ...
+• **Crucial Fact 2**: ...
 
 DOCUMENT CONTENT:
 {context[:22000]}
@@ -190,33 +217,69 @@ DOCUMENT CONTENT:
             prompt = f"""
 You are EduMind AI. Generate **Rapid Revision Notes** for fast active recall based strictly on the uploaded document.
 
-Format in clean Markdown:
-### ⚡ Rapid Revision Notes (Active Recall Sprint)
+CRITICAL FORMATTING:
+- Separate topics with '---'
+- Markdown tables for comparisons
+- Bold bullet points
 
-#### 📌 Core Concept Summaries
-(2-sentence crisp summaries for every major topic in the document)
+# ⚡ Rapid Revision Notes (Active Recall Sprint)
 
-#### 🔄 Comparison Matrices & Trade-offs
-(Markdown tables comparing interrelated paradigms, concepts, or methods)
+> 💡 **Revision Goal**: (1-2 sentences on what to memorize during this active recall session)
 
-#### 🧠 Self-Testing Questions
-(10 rapid-fire active recall questions to test memory retention)
+---
+
+### 📌 1. Core Concept Quick-Hits
+• **[Topic 1]**: (2-sentence crisp summary of core mechanics)
+• **[Topic 2]**: (2-sentence crisp summary of core mechanics)
+
+---
+
+### 🔄 2. Comparison Matrix
+| Concept A | Concept B | Core Distinction / Trade-off |
+| :--- | :--- | :--- |
+| **[Concept A]** | **[Concept B]** | [Main functional difference] |
+
+---
+
+### 🧠 3. Active Recall Memory Test
+1. **[Question 1]** → *Hint: [Brief mnemonic/hint]*
+2. **[Question 2]** → *Hint: [Brief mnemonic/hint]*
 
 DOCUMENT CONTENT:
 {context[:22000]}
 """
         elif note_type == "one_page":
             prompt = f"""
-You are EduMind AI. Generate a **Condensed One-Page Cheat Sheet / Master Notes** synthesizing the entire document on one clean page.
+You are EduMind AI. Generate a **Condensed One-Page Master Synthesis** synthesizing the entire document on one clean page.
 
-Format in clean Markdown:
-### 📄 One-Page Master Synthesis
+# 📄 One-Page Master Synthesis
 
-- **Core Theme**: (1 crisp sentence)
-- **Foundational Principles**: (3-4 high-impact bullets)
-- **Key Equations / Mechanics**: (Formulas or core algorithmic flow)
-- **Vital Terminology**: (Top 8 must-remember terms)
-- **Actionable Takeaways**: (Key conclusions)
+> 💡 **Core Thesis**: (1 clear, powerful sentence defining the subject)
+
+---
+
+### 🏛️ Foundational Pillars
+• **Pillar 1**: [Essential concept in 1 sentence]
+• **Pillar 2**: [Essential concept in 1 sentence]
+
+---
+
+### ⚙️ Mechanics & Flow
+• **Core Equation / Flow**: \`[Key formula or logic]\`
+• **How It Executes**: [Step-by-step mechanism in bullets]
+
+---
+
+### 📌 Vital Terminology Cheat Sheet
+| Term | Meaning | One-Line Intuition |
+| :--- | :--- | :--- |
+| **[Term 1]** | [Definition] | [Intuitive takeaway] |
+
+---
+
+### 🎯 Key Conclusions & Takeaways
+• **Takeaway 1**: ...
+• **Takeaway 2**: ...
 
 DOCUMENT CONTENT:
 {context[:22000]}
@@ -225,25 +288,91 @@ DOCUMENT CONTENT:
             prompt = f"""
 You are EduMind AI. Generate comprehensive **Hierarchical Bullet-Point Notes** based strictly on the uploaded document.
 
-Format in clean Markdown with nested bullets, bold terms, and key definitions:
-### 📝 Structured Bullet-Point Notes
+# 📝 Structured Hierarchical Notes
+
+> 💡 **Overview**: (1-2 sentences summarizing the document)
+
+---
+
+### 📌 1. [First Major Topic]
+• **Core Principle**: [Explanation]
+  - Sub-concept: [Details]
+
+---
+
+### 📌 2. [Second Major Topic]
+• **Core Principle**: [Explanation]
+  - Sub-concept: [Details]
 
 DOCUMENT CONTENT:
 {context[:22000]}
 """
         else: # detailed / class notes
             prompt = f"""
-You are EduMind AI, an elite university professor. Generate comprehensive, lecture-grade **Detailed Class Notes** based strictly on the uploaded document.
+You are EduMind AI, a distinguished university professor (matching ChatGPT, Grok, and Gemini standards).
+Generate elite, beautifully formatted, lecture-grade **Class Lecture Notes** based strictly on the provided study document.
 
-Format in rich Markdown:
-### 📚 Comprehensive Class Notes & Study Guide
+CRITICAL FORMATTING & READABILITY RULES:
+- NEVER output a single giant wall of text. Everything must be organized into clear sections.
+- Separate every section with clean Markdown headings (## and ###) and thematic breaks (---).
+- Put key terminology and core definitions in a clean Markdown table with headers: | Term | Definition | Key Significance |.
+- Use clean bullet points (•) and bold highlighting (**term**) for every key concept.
+- Highlight formulas and technical terms inside backticks (\`like this\`).
 
-#### 1. Introduction & Contextual Background
-#### 2. Deep Theoretical Foundations
-#### 3. Step-by-Step Mechanisms & Derivations
-#### 4. Case Studies & Real-World Examples
-#### 5. Formulas, Equations & Working Logic
-#### 6. Summary Review & Discussion Questions
+Follow this exact structure:
+
+# 📚 Class Lecture Notes & Study Guide
+
+> 💡 **Lecture Overview**: (A 2-3 sentence crystal-clear summary of what this lecture is about)
+
+---
+
+### 1. 🎯 Core Learning Objectives
+• Objective 1: [What the student will understand]
+• Objective 2: [Key mechanism to master]
+
+---
+
+### 2. 📌 Key Terminology & Definitions
+| Term | Exact Definition | Practical Insight / Example |
+| :--- | :--- | :--- |
+| **[Term 1]** | [Clear definition] | [Application or insight] |
+| **[Term 2]** | [Clear definition] | [Application or insight] |
+
+---
+
+### 3. 🧠 Comprehensive Lecture Breakdown & Mechanisms
+#### 3.1 [First Major Concept]
+• **Core Principle**: ...
+• **How It Works**: ...
+
+#### 3.2 [Second Major Concept]
+• **Core Principle**: ...
+• **How It Works**: ...
+
+---
+
+### 4. ⚡ Formulas, Laws & Governing Rules
+• **Formula / Law**: \`[Equation or Rule]\`
+• **When to Apply**: ...
+
+---
+
+### 5. 💡 Real-World Examples & Intuitive Analogies
+• **Real-World Case**: [Practical concrete example]
+• **Memory Analogy**: [A simple, vivid real-world analogy]
+
+---
+
+### 6. ⚠️ Common Misconceptions & Student Traps
+• **Common Mistake**: [What students frequently confuse]
+  - **The Truth**: [Why that is wrong and how to think about it correctly]
+
+---
+
+### 7. 📝 Rapid Recall & Practice Questions
+1. [Self-test question 1 to check understanding]
+2. [Self-test question 2 to check understanding]
 
 DOCUMENT CONTENT:
 {context[:25000]}

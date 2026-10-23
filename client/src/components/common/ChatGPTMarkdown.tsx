@@ -19,22 +19,22 @@ export const ChatGPTMarkdown: React.FC<ChatGPTMarkdownProps> = ({
         remarkPlugins={[remarkGfm]}
         components={{
           h1: ({ children }) => (
-            <h1 className="mt-5 mb-3 text-xl sm:text-2xl font-bold tracking-tight text-white border-b border-white/10 pb-2 first:mt-0">
+            <h1 className="mt-6 mb-4 text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-white border-b border-white/10 pb-3 first:mt-0 flex items-center gap-2">
               {children}
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="mt-4 mb-2.5 text-lg sm:text-xl font-bold tracking-tight text-white first:mt-0">
+            <h2 className="mt-5 mb-3 text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-white first:mt-0">
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="mt-3.5 mb-2 text-base sm:text-lg font-bold text-cyan-300 first:mt-0">
+            <h3 className="mt-5 mb-2.5 text-base sm:text-lg font-bold text-cyan-300 first:mt-0 flex items-center gap-2">
               {children}
             </h3>
           ),
           h4: ({ children }) => (
-            <h4 className="mt-3 mb-1.5 text-sm sm:text-base font-semibold text-slate-200">
+            <h4 className="mt-4 mb-2 text-sm sm:text-base font-semibold text-slate-100">
               {children}
             </h4>
           ),
@@ -54,12 +54,12 @@ export const ChatGPTMarkdown: React.FC<ChatGPTMarkdownProps> = ({
             </em>
           ),
           ul: ({ children }) => (
-            <ul className="my-3 list-disc pl-6 space-y-1.5 text-slate-200 marker:text-cyan-400">
+            <ul className="my-3 list-disc pl-6 space-y-2 text-slate-200 marker:text-cyan-400">
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol className="my-3 list-decimal pl-6 space-y-1.5 text-slate-200 marker:text-cyan-400">
+            <ol className="my-3 list-decimal pl-6 space-y-2 text-slate-200 marker:text-cyan-400 font-medium">
               {children}
             </ol>
           ),
@@ -69,42 +69,42 @@ export const ChatGPTMarkdown: React.FC<ChatGPTMarkdownProps> = ({
             </li>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="my-3.5 border-l-4 border-cyan-500 bg-cyan-950/20 pl-4 py-2 italic text-slate-300 rounded-r-xl border-y border-r border-white/5">
+            <blockquote className="my-4 border-l-4 border-cyan-400 bg-cyan-950/30 px-4 py-3 text-sm sm:text-base text-slate-200 rounded-r-2xl border-y border-r border-cyan-500/10 shadow-sm leading-relaxed">
               {children}
             </blockquote>
           ),
           hr: () => (
-            <hr className="my-4 border-t border-white/10" />
+            <hr className="my-6 border-t border-white/10" />
           ),
           table: ({ children }) => (
-            <div className="my-4 overflow-x-auto rounded-xl border border-white/10 shadow-md">
+            <div className="my-5 overflow-x-auto rounded-2xl border border-white/15 bg-slate-900/60 shadow-lg backdrop-blur-sm">
               <table className="min-w-full text-left text-xs sm:text-sm border-collapse">
                 {children}
               </table>
             </div>
           ),
           thead: ({ children }) => (
-            <thead className="bg-slate-800/90 text-white font-bold border-b border-white/10">
+            <thead className="bg-slate-800/90 text-white font-bold border-b border-white/15">
               {children}
             </thead>
           ),
           th: ({ children }) => (
-            <th className="px-4 py-2.5 font-bold text-white border-r border-white/5 last:border-r-0">
+            <th className="px-4 py-3 font-bold text-cyan-200 border-r border-white/10 last:border-r-0 whitespace-nowrap">
               {children}
             </th>
           ),
           tbody: ({ children }) => (
-            <tbody className="divide-y divide-white/5 bg-slate-950/40">
+            <tbody className="divide-y divide-white/10 bg-slate-950/40">
               {children}
             </tbody>
           ),
           td: ({ children }) => (
-            <td className="px-4 py-2.5 text-slate-300 border-r border-white/5 last:border-r-0">
+            <td className="px-4 py-3 text-slate-200 border-r border-white/10 last:border-r-0 leading-relaxed align-top">
               {children}
             </td>
           ),
           pre: ({ children }) => (
-            <div className="my-3.5 overflow-hidden rounded-xl border border-white/10 bg-slate-950 shadow-lg">
+            <div className="my-4 overflow-hidden rounded-2xl border border-white/15 bg-slate-950 shadow-xl">
               {children}
             </div>
           ),
@@ -115,7 +115,7 @@ export const ChatGPTMarkdown: React.FC<ChatGPTMarkdownProps> = ({
             if (!hasMultipleLines && !className) {
               return (
                 <code
-                  className="rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-xs text-cyan-200 border border-white/10 font-semibold"
+                  className="rounded-lg bg-slate-800/90 px-2 py-0.5 font-mono text-xs text-cyan-300 border border-white/10 font-medium"
                   {...props}
                 >
                   {children}
