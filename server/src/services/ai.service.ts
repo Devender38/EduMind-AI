@@ -90,14 +90,12 @@ export interface AISemanticSearch {
 }
 
 // =============================
-// Direct OpenRouter AI Helper
+// Direct AI Engine (Groq + OpenRouter)
 // =============================
 
 const FREE_FALLBACK_MODELS = [
-  "openrouter/free",
   "liquid/lfm-2.5-2.6b:free",
   "google/gemma-4-26b-a4b-it:free",
-  "nvidia/nemotron-3.5-lightning:free",
   "google/gemini-2.5-flash",
 ];
 
@@ -107,8 +105,54 @@ async function callAIDirect(
   retries: number = 3,
   modelIndex: number = 0
 ): Promise<string> {
-  const envModel = process.env.MODEL_NAME || "openrouter/free";
-  const modelsToTry = [envModel, ...FREE_FALLBACK_MODELS.filter((m) => m !== envModel)];
+  // 1. Try Groq Cloud if GROQ_API_KEY is configured in environment
+  const groqApiKey = process.env.GROQ_API_KEY || "";
+  if (groqApiKey && modelIndex === 0) {
+    try {
+      const groqModel = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+      const groqRes = await axios.post(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          model: groqModel,
+          messages,
+          temperature: jsonMode ? 0.1 : 0.5,
+          max_tokens: jsonMode ? 2000 : 1500,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${groqApiKey}`,
+            "Content-Type": "application/json",
+          },
+          timeout: 20000,
+        }
+      );
+      const groqContent = groqRes.data?.choices?.[0]?.message?.content;
+      if (groqContent && groqContent.trim() && !groqContent.toLowerCase().includes("user safety: safe")) {
+        return groqContent.trim();
+      }
+    } catch (groqErr: any) {
+      logger.warn(
+        "Groq AI attempt failed, falling back to OpenRouter:",
+        groqErr?.response?.data || groqErr.message
+      );
+    }
+  }
+
+  // 2. OpenRouter with high-quality free instruction-following models
+  let rawModel = process.env.MODEL_NAME || "liquid/lfm-2.5-2.6b:free";
+  // Filter out wildcard routers that randomly route to moderation/safety classifiers
+  if (
+    rawModel === "openrouter/free" ||
+    rawModel.includes("safety") ||
+    rawModel.includes("content-safety")
+  ) {
+    rawModel = "liquid/lfm-2.5-2.6b:free";
+  }
+
+  const modelsToTry = [
+    rawModel,
+    ...FREE_FALLBACK_MODELS.filter((m) => m !== rawModel),
+  ];
   const selectedModel = modelsToTry[modelIndex] || modelsToTry[0];
 
   try {
@@ -142,7 +186,23 @@ async function callAIDirect(
     );
 
     const msg = response.data?.choices?.[0]?.message;
-    return msg?.content || msg?.text || msg?.reasoning || "";
+    const answer = (msg?.content || msg?.text || msg?.reasoning || "").trim();
+
+    // If answer is empty or just a safety moderation tag, fall back to next model
+    if (
+      !answer ||
+      answer.toLowerCase() === "user safety: safe" ||
+      answer.toLowerCase() === "safe"
+    ) {
+      if (modelIndex + 1 < modelsToTry.length) {
+        logger.warn(
+          `Model ${selectedModel} returned non-instruction response. Switching to fallback: ${modelsToTry[modelIndex + 1]}`
+        );
+        return callAIDirect(messages, jsonMode, retries, modelIndex + 1);
+      }
+    }
+
+    return answer;
   } catch (error: any) {
     const status = error.response?.status;
     const isModelUnavailable = status === 404 || status === 400 || status === 402;
