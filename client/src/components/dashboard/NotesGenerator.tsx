@@ -14,9 +14,8 @@ import {
   BookOpen,
   Printer,
 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import toast from "react-hot-toast";
+import { ChatGPTMarkdown } from "../common/ChatGPTMarkdown";
 
 import {
   generateNotes,
@@ -315,11 +314,9 @@ export default function NotesGenerator({ document }: Props) {
             </div>
           </div>
 
-          {/* Markdown Content */}
-          <div className="prose prose-invert max-w-none p-6 text-sm text-slate-200 leading-relaxed overflow-x-auto">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {currentNote.content}
-            </ReactMarkdown>
+          {/* Formatted Markdown Content */}
+          <div className="p-6 sm:p-8 overflow-x-auto leading-relaxed">
+            <ChatGPTMarkdown content={currentNote.content} />
           </div>
         </div>
       ) : (

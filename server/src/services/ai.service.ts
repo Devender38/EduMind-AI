@@ -767,12 +767,154 @@ ${docContext || "General Study Topic"}`;
     } catch {
       logger.warn(`Using direct Groq notes generator`);
       const docContext = await getDocumentContext(documentId);
-      const prompt = `Generate comprehensive ${noteType} study revision notes with bullet points, formulas/definitions, and key takeaways for:\n\n${docContext || "Subject Study Material"}`;
+
+      let prompt = "";
+      if (noteType === "detailed") {
+        prompt = `You are a distinguished university professor and academic author.
+Generate elite, beautifully formatted, lecture-grade **Class Lecture Notes** based strictly on the provided study document.
+
+CRITICAL FORMATTING & READABILITY RULES:
+- NEVER output a single giant wall of text. Everything must be organized into clear sections.
+- Separate every section with clean Markdown headings (## and ###) and thematic breaks (---).
+- Put key terminology and core definitions in a clean Markdown table with headers: | Term | Definition | Key Significance |.
+- Use clean bullet points (•) and bold highlighting (**term**) for every key concept.
+- Highlight formulas and technical terms inside backticks (\`like this\`).
+- If the document contains math or logic, explain the steps step-by-step.
+
+Follow this exact structure:
+
+# 📚 [Topic Name] — Class Lecture Notes
+
+> 💡 **Lecture Overview**: (A 2-3 sentence crystal-clear summary of what this lecture is about)
+
+---
+
+### 1. 🎯 Core Learning Objectives
+• Objective 1: [What the student will understand]
+• Objective 2: [Key mechanism to master]
+• Objective 3: [Real-world problem it solves]
+
+---
+
+### 2. 📌 Key Terminology & Definitions
+| Term | Exact Definition | Practical Insight / Example |
+| :--- | :--- | :--- |
+| **[Term 1]** | [Clear, concise definition] | [Application or insight] |
+| **[Term 2]** | [Clear, concise definition] | [Application or insight] |
+| **[Term 3]** | [Clear, concise definition] | [Application or insight] |
+
+---
+
+### 3. 🧠 Comprehensive Lecture Breakdown & Mechanisms
+(Break down the core content into clean, numbered sub-sections with well-spaced bullet points)
+
+#### 3.1 [First Major Concept / Foundation]
+• **Core Principle**: ...
+• **How It Works**: ...
+• **Key Characteristics**: ...
+
+#### 3.2 [Second Major Concept / Deep Dive]
+• **Core Principle**: ...
+• **How It Works**: ...
+• **Key Characteristics**: ...
+
+---
+
+### 4. ⚡ Formulas, Laws & Governing Rules
+• **Formula / Law**: \`[Equation or Rule]\`
+• **Variables Explained**:
+  - \`variable 1\` = meaning and units
+  - \`variable 2\` = meaning and units
+• **When to Apply**: ...
+
+---
+
+### 5. 💡 Real-World Examples & Intuitive Analogies
+• **Real-World Case**: [Practical concrete example]
+• **Memory Analogy**: [A simple, vivid real-world analogy to remember this concept forever]
+
+---
+
+### 6. ⚠️ Common Misconceptions & Student Traps
+• **Common Mistake**: [What students frequently confuse]
+  - **The Truth**: [Why that is wrong and how to think about it correctly]
+
+---
+
+### 7. 📝 Rapid Recall & Practice Questions
+1. [Self-test question 1 to check understanding]
+2. [Self-test question 2 to check understanding]
+3. [Self-test question 3 to check understanding]
+
+DOCUMENT CONTENT:
+${docContext || "Subject Study Material"}`;
+      } else if (noteType === "exam") {
+        prompt = `You are an elite academic exam prep specialist. Generate **High-Yield Exam Notes** based strictly on the provided document.
+
+Format in clean, structured Markdown:
+# 🎓 High-Yield Exam Master Notes
+
+### ⚡ 1. Must-Know Formulas & Key Theorems
+(List every critical formula, law, and definition with units)
+
+### 🎯 2. High-Probability Exam Questions & Model Answers
+(Top 5-6 conceptual exam questions likely to appear, with complete model answers)
+
+### ⚠️ 3. Common Exam Traps & Tricky Distinctions
+(Pitfalls and subtle differences examiners love to test)
+
+### 📝 4. Last-Minute Rapid Recall Cheat Sheet
+(High-density bullet points for quick revision)
+
+DOCUMENT CONTENT:
+${docContext || "Subject Study Material"}`;
+      } else if (noteType === "revision") {
+        prompt = `You are an expert tutor. Generate **Rapid Revision Notes** for fast active recall based strictly on the provided document.
+
+Format in clean Markdown:
+# ⚡ Rapid Revision Notes (Active Recall Sprint)
+
+### 📌 1. Core Concept Summaries
+(2-sentence crisp summaries for every major topic in the document)
+
+### 🔄 2. Comparison Matrix
+| Concept A | Concept B | Key Difference |
+| :--- | :--- | :--- |
+
+### 🧠 3. Self-Testing Active Recall Questions
+(10 rapid-fire questions to test memory retention)
+
+DOCUMENT CONTENT:
+${docContext || "Subject Study Material"}`;
+      } else if (noteType === "one_page") {
+        prompt = `You are an academic synthesis expert. Generate a **Condensed One-Page Cheat Sheet** on the provided document.
+
+Format in high-density, clean Markdown:
+# 📄 One-Page Master Synthesis
+
+- **Core Theme**: (1 crisp sentence)
+- **Foundational Principles**: (3-4 high-impact bullets)
+- **Key Equations / Mechanics**: (Formulas or core algorithmic flow)
+- **Vital Terminology Table**: (Top terms with brief definitions)
+- **Actionable Takeaways**: (Key conclusions)
+
+DOCUMENT CONTENT:
+${docContext || "Subject Study Material"}`;
+      } else {
+        prompt = `You are a master educator. Generate comprehensive, cleanly indented **Hierarchical Bullet-Point Notes** based strictly on the document.
+
+Format with clear Markdown headings, nested bullets, bold key terms, and concise definitions:
+# 📝 Structured Bullet-Point Notes
+
+DOCUMENT CONTENT:
+${docContext || "Subject Study Material"}`;
+      }
 
       const notes = await callAIDirect([
         {
           role: "system",
-          content: "You are a master educator. Output clear, beautiful Markdown notes.",
+          content:
+            "You are a master academic educator. Output crystal-clear, beautifully organized Markdown notes. Never output messy, unseparated, or mixed-up text.",
         },
         { role: "user", content: prompt },
       ]);
